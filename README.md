@@ -108,6 +108,9 @@ ExpiryDate (DateTime)
 User (User)
 ```
 
+-------------------------------------
+
+
 # 🔁 Enums
 ### 🏷️ SubscriptionType
 ```
