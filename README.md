@@ -1,10 +1,10 @@
 # EnglishUp
 
-### 📦 Domain Models – EnglishUp Platform
+# 📦 Domain Models – EnglishUp Platform
 C# .NET 9 | Clean Architecture | Domain Layer
 These models define the structure of users, subscriptions, learning content, test tracking, and gamification for an IELTS preparation platform.
 
-## 👤 User
+### 👤 User
 ```
 Id (Guid)
 FullName (string)
@@ -20,14 +20,14 @@ PointTransactions (List<PointTransaction>)
 MockTests (List<MockTest>)
 ```
 
-## 🔐 Role
+### 🔐 Role
 ```
 Id (Guid)
 Name (string)
 Users (List<User>)
 ```
 
-## 📝 Course
+### 📝 Course
 ```
 Id (Guid)
 Title (string)
@@ -36,7 +36,7 @@ UserCourses (List<UserCourse>)
 Homeworks (List<Homework>)
 ```
 
-## 🎓 UserCourse
+### 🎓 UserCourse
 ```
 UserId (Guid)
 CourseId (Guid)
@@ -46,7 +46,7 @@ User (User)
 Course (Course)
 ```
 
-## 📚 Homework
+### 📚 Homework
 ```
 Id (Guid)
 CourseId (Guid)
@@ -57,7 +57,7 @@ Course (Course)
 Submissions (List<HomeworkSubmission>)
 ```
 
-## ✍️ HomeworkSubmission
+### ✍️ HomeworkSubmission
 ```
 Id (Guid)
 UserId (Guid)
@@ -69,7 +69,7 @@ User (User)
 Homework (Homework)
 ```
 
-## ⭐ PointTransaction
+### ⭐ PointTransaction
 ```
 Id (Guid)
 UserId (Guid)
@@ -79,7 +79,7 @@ EarnedAt (DateTime)
 User (User)
 ```
 
-## 🧪 MockTest
+### 🧪 MockTest
 ```
 Id (Guid)
 UserId (Guid)
@@ -89,7 +89,7 @@ User (User)
 Results (List<MockTestResult>)
 ```
 
-## 📊 MockTestResult
+### 📊 MockTestResult
 ```
 Id (Guid)
 MockTestId (Guid)
@@ -98,7 +98,7 @@ Score (double)
 MockTest (MockTest)
 ```
 
-## 📬 Subscription
+### 📬 Subscription
 ```
 Id (Guid)
 UserId (Guid)
@@ -108,8 +108,8 @@ ExpiryDate (DateTime)
 User (User)
 ```
 
-### 🔁 Enums
-## 🏷️ SubscriptionType
+# 🔁 Enums
+### 🏷️ SubscriptionType
 ```
     CourseOnly = 0,
     Monthly = 1,
@@ -117,7 +117,7 @@ User (User)
     Yearly = 3
 ```
 
-## 🧭 CourseLevel
+### 🧭 CourseLevel
 ```
     Beginner = 0,
     Elementary = 1,
@@ -128,13 +128,13 @@ User (User)
     IELTS = 6,
     TOEFL = 7
 ```
-🧪 MockTestType
+### 🧪 MockTestType
 ```
     IELTS,
     TOEFL
 ```
 
-📚 TestSection
+### 📚 TestSection
 ```
     Listening,
     Reading,
