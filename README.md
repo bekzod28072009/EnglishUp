@@ -108,3 +108,37 @@ ExpiryDate (DateTime)
 User (User)
 ```
 
+### 🔁 Enums
+## 🏷️ SubscriptionType
+```
+    CourseOnly = 0,
+    Monthly = 1,
+    Quarterly = 2,
+    Yearly = 3
+```
+
+## 🧭 CourseLevel
+```
+    Beginner = 0,
+    Elementary = 1,
+    PreIntermediate = 2,
+    Intermediate = 3,
+    UpperIntermediate = 4,
+    Advanced = 5,
+    IELTS = 6,
+    TOEFL = 7
+```
+🧪 MockTestType
+```
+    IELTS,
+    TOEFL
+```
+
+📚 TestSection
+```
+    Listening,
+    Reading,
+    Writing,
+    Speaking
+```
+These are the all models of the project.
