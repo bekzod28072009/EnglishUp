@@ -14,8 +14,8 @@ public class User : Auditable
     public int Age { get; set; }
     public long RoleId { get; set; }
     public Role Role { get; set; } = default!;
-    public ICollection<UserCourse> UserCourses { get; set; }
-    public ICollection<UserHomework> UserHomeworks { get; set; }
-    public ICollection<TestResult> TestResult { get; set; }
-    public ICollection<PointTransaction> PointTransactions { get; set; }
+    public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
+    public ICollection<UserHomework> UserHomeworks { get; set; } = new List<UserHomework>();
+    public ICollection<TestResult> TestResult { get; set; } = new List<TestResult>();
+    public ICollection<PointTransaction> PointTransactions { get; set; } = new List<PointTransaction>();
 }
