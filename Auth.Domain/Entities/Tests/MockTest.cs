@@ -6,5 +6,5 @@ public class MockTest : Auditable
 {
     public string Title { get; set; } = string.Empty;
     public DateTime ScheduledAt { get; set; }
-    public ICollection<TestResult> Results { get; set; }
+    public ICollection<TestResult> Results { get; set; } = new List<TestResult>();
 }
