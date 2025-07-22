@@ -1,3 +1,4 @@
+using Auth.Api.Extensions;
 using Auth.DataAccess.AppDbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
+
+builder.Services.AddServices(); // Custom extension method to add services
+
+
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
