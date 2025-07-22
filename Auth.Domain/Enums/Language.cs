@@ -2,4 +2,7 @@
 
 public enum Language
 {
+    uz,
+    ru,
+    eng
 }
