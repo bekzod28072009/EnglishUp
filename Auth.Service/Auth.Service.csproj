@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Gamification\" />
-    <Folder Include="DTOs\Permissions\" />
-    <Folder Include="DTOs\Subscriptions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Auth.Domain\Auth.Domain.csproj" />
   </ItemGroup>
 
