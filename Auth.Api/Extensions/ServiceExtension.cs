@@ -9,5 +9,8 @@ public static class ServiceExtension
     {
         // Repository
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+        // Services
+
     }
 }
