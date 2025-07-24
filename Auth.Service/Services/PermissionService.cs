@@ -87,7 +87,7 @@ public class PermissionService : IPermissionService
             throw new HttpStatusCodeException(404, "Permission not found");
 
         // Correct the argument passed to DeleteAsync by using the filter expression  
-        await _repository.DeleteAsync(filter);
+        await _repository.DeleteAsync(permission);
         await _repository.SaveChangesAsync();
         return true;
     }

@@ -20,16 +20,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Auditable
     public async ValueTask<T> CreateAsync(T entity) =>
         (await dbContext.AddAsync(entity)).Entity;
 
-    public async ValueTask<bool> DeleteAsync(Expression<Func<T, bool>> expression = null, string[] includes = null)
-    {
-        var user = await this.GetAsync(expression);
-        if (user is null)
-            return false;
-
-        this.dbSet.Remove(user);
-        return true;
-    }
-
     public IQueryable<T> GetAll(Expression<Func<T, bool>> expression, string[] includes = null)
     {
         IQueryable<T> query = expression == null ? dbSet.Where(item => item.DeletedBy == null) : dbSet.Where(item => item.DeletedBy == null).Where(expression);
@@ -53,4 +43,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Auditable
 
     public async ValueTask SaveChangesAsync()
         => await dbContext.SaveChangesAsync();
+
+    public async ValueTask<bool> DeleteAsync(T entity)
+    {
+        if (entity == null)
+            return false;
+
+        dbSet.Remove(entity);
+        await dbContext.SaveChangesAsync();
+        return true;
+    }
 }
