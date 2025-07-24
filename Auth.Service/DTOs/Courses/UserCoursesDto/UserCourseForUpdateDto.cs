@@ -2,7 +2,8 @@
 
 public class UserCourseForUpdateDto
 {
-    public string? UserComment { get; set; }
+    public long UserId { get; set; }
+    public long CourseId { get; set; }
     public bool? IsCompleted { get; set; }
     public DateTime? CompletedAt { get; set; }
 }

@@ -48,10 +48,13 @@ public class CourseService : ICourseService
         if (course is null)
             return false;
 
-        await repository.SaveChangesAsync(); // Ensure any pending changes are saved before deletion
 
-        // Fix: Pass the filter expression instead of the course object to DeleteAsync  
-        return await repository.DeleteAsync(filter);
+        
+        
+        await repository.DeleteAsync(course);
+        await repository.SaveChangesAsync(); 
+        return true; 
+
     }
 
     public async Task<CourseForViewDto> UpdateAsync(long id, CourseForUpdateDto dto)

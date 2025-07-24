@@ -45,9 +45,11 @@ public class LessonPartService : ILessonPartService
         if (lessonPart is null)
             return false;
 
-        await repository.SaveChangesAsync(); // Ensure any pending changes are saved before deletion
+         
 
-        return await repository.DeleteAsync(filter);
+        await repository.DeleteAsync(lessonPart);
+        await repository.SaveChangesAsync();
+        return true;
     }
 
     public async Task<LessonPartForViewDto> UpdateAsync(long id, LessonPartForUpdateDto dto)

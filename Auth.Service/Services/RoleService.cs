@@ -168,7 +168,7 @@ public class RoleService : IRoleService
             throw new HttpStatusCodeException(404, "Role not found");
 
         role.DeletedBy = HttpContextHelper.UserId;
-        await _repository.DeleteAsync(r => r.Id == role.Id); // Fix: Pass a lambda expression matching the expected type  
+        await _repository.DeleteAsync(role);  
         await _repository.SaveChangesAsync();
         return true;
     }

@@ -105,7 +105,7 @@ public class UserService : IUserService
             throw new HttpStatusCodeException(404, "User not found");
 
         res.DeletedBy = HttpContextHelper.UserId;
-        await this._repository.DeleteAsync(u => u.Id == res.Id); // Fix: Pass a valid Expression<Func<User, bool>>  
+        await _repository.DeleteAsync(res);
         await _repository.SaveChangesAsync();
         return true;
     }
@@ -138,7 +138,7 @@ public class UserService : IUserService
 
     public async Task<bool> ChangePassword(string email, string password)
     {
-        var user = await this._repository.GetAsync(item => item.Email == email);
+        var user = await _repository.GetAsync(item => item.Email == email);
 
         if (user == null)
         {
