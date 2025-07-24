@@ -2,7 +2,7 @@
 
 namespace Auth.Service.DTOs.Permissions;
 
-public class PerrmissionForViewDto
+public class PermissionForViewDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = null!;

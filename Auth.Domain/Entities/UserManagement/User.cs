@@ -10,8 +10,9 @@ public class User : Auditable
 {
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;
     public int Age { get; set; }
+    public int PhoneNumber { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;    
     public long RoleId { get; set; }
     public Role Role { get; set; } = default!;
     public ICollection<UserCourse>? UserCourses { get; set; } = new List<UserCourse>();
