@@ -31,15 +31,14 @@ public class CourseService : ICourseService
     public async Task<CourseForViewDto> GetAsync(Expression<Func<Course, bool>> filter, string[] includes = null)
     {
         var course = await repository.GetAsync(filter, includes);
-        return course is null
-            ? null
-            : mapper.Map<CourseForViewDto>(course);
+        return course is null? null : mapper.Map<CourseForViewDto>(course);
     }
 
     public async Task<CourseForViewDto> CreateAsync(CourseForCreationDto dto)
     {
         var course = mapper.Map<Course>(dto);
         var created = await repository.CreateAsync(course);
+        await repository.SaveChangesAsync(); // Ensure changes are saved asynchronously
         return mapper.Map<CourseForViewDto>(created);
     }
 
@@ -48,6 +47,8 @@ public class CourseService : ICourseService
         var course = await repository.GetAsync(filter);
         if (course is null)
             return false;
+
+        await repository.SaveChangesAsync(); // Ensure any pending changes are saved before deletion
 
         // Fix: Pass the filter expression instead of the course object to DeleteAsync  
         return await repository.DeleteAsync(filter);
