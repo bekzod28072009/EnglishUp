@@ -4,6 +4,9 @@ public class UserForUpdateDto
 {
     public string? FullName { get; set; }
     public string? Email { get; set; }
-    public int? Age { get; set; }
-    public long? RoleId { get; set; }
+
+    // Passwords
+    public string? OldPassword { get; set; }
+    public string? NewPassword { get; set; }
+    public string? ConfirmPassword { get; set; }
 }

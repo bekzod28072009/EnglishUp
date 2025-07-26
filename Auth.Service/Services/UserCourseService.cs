@@ -3,12 +3,13 @@ using Auth.Domain.Entities.Courses;
 using Auth.Service.DTOs.Courses.UserCoursesDto;
 using Auth.Service.Exceptions;
 using Auth.Service.Helpers;
+using Auth.Service.Interfaces;
 using AutoMapper;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
 
-public class UserCourseService
+public class UserCourseService : IUserCourseService
 {
     private readonly IGenericRepository<UserCourse> repository;
     private readonly IMapper mapper;
@@ -19,9 +20,9 @@ public class UserCourseService
         this.mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserCourseForViewDto>> GetAllAsync(string[] includes = null)
+    public async Task<IEnumerable<UserCourseForViewDto>> GetAllAsync(Expression<Func<UserCourse, bool>> filter = null, string[] includes = null)
     {
-        var userCourses = repository.GetAll(null, includes);
+        var userCourses = repository.GetAll(filter, includes);
         return userCourses.Select(mapper.Map<UserCourseForViewDto>);
     }
 

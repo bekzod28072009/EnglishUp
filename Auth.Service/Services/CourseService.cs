@@ -1,10 +1,12 @@
 ﻿using Auth.DataAccess.Interface;
 using Auth.Domain.Entities.Courses;
+using Auth.Domain.Entities.Gamification;
 using Auth.Service.DTOs.Courses.CoursesDto;
 using Auth.Service.Exceptions;
 using Auth.Service.Helpers;
 using Auth.Service.Interfaces;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
@@ -21,10 +23,9 @@ public class CourseService : ICourseService
         this.repository = repository;   
     }
 
-    public async Task<IEnumerable<CourseForViewDto>> GetAllAsync(string lang, string[] includes = null)
-    {
-        var courses = repository.GetAll(null, includes); // Updated to use GetAll instead of GetAllAsync  
-                                                         // You can optionally filter by lang here if your Course has a Lang field  
+    public async Task<IEnumerable<CourseForViewDto>> GetAllAsync(Expression<Func<Course, bool>> filter = null, string[] includes = null)
+    {        
+        var courses = await repository.GetAll(filter, includes).ToListAsync();
         return mapper.Map<IEnumerable<CourseForViewDto>>(courses);
     }
 

@@ -2,13 +2,14 @@
 using Auth.Domain.Entities.Gamification;
 using Auth.Service.DTOs.Gamification.StreakLogDto;
 using Auth.Service.Exceptions;
+using Auth.Service.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
 
-public class StreakLogService
+public class StreakLogService : IStreakLogService
 {
     private readonly IGenericRepository<StreakLog> repository;
     private readonly IMapper mapper;
@@ -64,5 +65,18 @@ public class StreakLogService
         await repository.DeleteAsync(entity);
         await repository.SaveChangesAsync(); // SaveChangesAsync returns void, so remove the comparison.  
         return true;
+    }
+
+    // Custom addition:
+
+    public async Task<IEnumerable<StreakLogForViewDto>> GetUserStreakLogAsync(long userId)
+    {
+        // Find all streak logs where the related Streak belongs to the given user
+        var logs = await repository.GetAll(
+            l => l.Streak.UserId == userId,
+            includes: new[] { "Streak" } // include navigation property
+        ).ToListAsync();
+
+        return logs.Select(log => mapper.Map<StreakLogForViewDto>(log));
     }
 }
