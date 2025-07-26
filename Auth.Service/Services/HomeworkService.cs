@@ -2,13 +2,14 @@
 using Auth.Domain.Entities.Courses;
 using Auth.Domain.Entities.Homeworks;
 using Auth.Service.DTOs.Homeworks.HomeworksDto;
+using Auth.Service.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
 
-public class HomeworkService
+public class HomeworkService : IHomeworkService
 {
     private readonly IGenericRepository<Homework> repository;
     private readonly IMapper mapper;
