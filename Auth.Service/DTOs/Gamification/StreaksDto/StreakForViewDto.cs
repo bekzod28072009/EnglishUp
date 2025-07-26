@@ -3,7 +3,8 @@
 public class StreakForViewDto
 {
     public long Id { get; set; }
-    public string UserFullName { get; set; }
-    public int DaysInRow { get; set; }
-    public DateTime LastActive { get; set; }
+    public long UserId { get; set; }
+    public int CurrentStreak { get; set; }
+    public int LongestStreak { get; set; }
+    public DateOnly LastActivityDate { get; set; }
 }

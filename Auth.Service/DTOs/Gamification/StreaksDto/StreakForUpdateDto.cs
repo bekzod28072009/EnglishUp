@@ -2,6 +2,7 @@
 
 public class StreakForUpdateDto
 {
-    public int? DaysInRow { get; set; }
-    public DateTime? LastActive { get; set; }
+    public int CurrentStreak { get; set; }
+    public int LongestStreak { get; set; }
+    public DateOnly LastActivityDate { get; set; }
 }
