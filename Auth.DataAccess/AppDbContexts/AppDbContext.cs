@@ -36,6 +36,7 @@ public class AppDbContext : DbContext
     // All related to Gamification
     public virtual DbSet<DailyChallengge> DailyChallenges { get; set; }
     public virtual DbSet<Streak> Streaks { get; set; }
+    public virtual DbSet<StreakLog> StreakLogs { get; set; }
 
     // All related to Homeworks
     public virtual DbSet<Homework> Homeworks { get; set; }

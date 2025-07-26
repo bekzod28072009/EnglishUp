@@ -1,6 +1,6 @@
 ﻿namespace Auth.Service.DTOs.Gamification.StreakLogDto;
 
-public class StreakForViewDto
+public class StreakLogForViewDto
 {
     public long Id { get; set; }
     public long StreakId { get; set; }
