@@ -1,12 +1,13 @@
 ﻿using Auth.DataAccess.Interface;
 using Auth.Domain.Entities.Gamification;
 using Auth.Service.DTOs.Gamification.DailyChallengesDto;
+using Auth.Service.Interfaces;
 using AutoMapper;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
 
-public class DailyChallengeService
+public class DailyChallengeService : IDaliyChallengeService
 {
     private readonly IGenericRepository<DailyChallengge> repository;
     private readonly IMapper mapper;
