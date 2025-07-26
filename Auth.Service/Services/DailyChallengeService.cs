@@ -3,6 +3,7 @@ using Auth.Domain.Entities.Gamification;
 using Auth.Service.DTOs.Gamification.DailyChallengesDto;
 using Auth.Service.Interfaces;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
@@ -35,9 +36,9 @@ public class DailyChallengeService : IDaliyChallengeService
         return await repository.DeleteAsync(challenge);
     }
 
-    public async Task<IEnumerable<DailyChallengeForViewDto>> GetAllAsync(string[] includes = null)
+    public async Task<IEnumerable<DailyChallengeForViewDto>> GetAllAsync(Expression<Func<DailyChallengge, bool>> filter = null, string[] includes = null)
     {
-        var challenges = repository.GetAll(null, includes);
+        var challenges = await repository.GetAll(filter, includes).ToListAsync();
         return mapper.Map<IEnumerable<DailyChallengeForViewDto>>(challenges);
     }
 

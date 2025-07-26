@@ -11,4 +11,8 @@ public interface IStreakLogService
     Task<StreakLogForViewDto> CreateAsync(StreakLogForCreationDto dto);
     Task<StreakLogForViewDto> UpdateAsync(long id, StreakLogForUpdateDto dto);
     Task<bool> DeleteAsync(Expression<Func<StreakLog, bool>> filter);
+
+
+    // Custom addition:
+    Task<IEnumerable<StreakLogForViewDto>> GetUserStreakLogAsync(long userId);
 }

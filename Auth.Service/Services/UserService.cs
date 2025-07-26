@@ -117,13 +117,6 @@ public class UserService : IUserService
         if (res == null)
             throw new HttpStatusCodeException(404, "User not found");
 
-        if (dto.RoleId == null || dto.RoleId == 0)
-        {
-            var roleRes = await _roleRepository.GetAsync(item => item.Id == dto.RoleId);
-            if (roleRes != null)
-                throw new HttpStatusCodeException(404, "Role is not exist");
-        }
-
         res = _mapper.Map(dto, res);
         res.UpdatedAt = DateTime.UtcNow;
 

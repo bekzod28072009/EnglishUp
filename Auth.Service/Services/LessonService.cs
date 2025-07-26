@@ -3,6 +3,7 @@ using Auth.Domain.Entities.Courses;
 using Auth.Service.DTOs.Courses.LessonsDto;
 using Auth.Service.Interfaces;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
@@ -18,9 +19,9 @@ public class LessonService : ILessonService
         this.mapper = mapper;
     }
 
-    public async Task<IEnumerable<LessonForViewDto>> GetAllAsync(string lang, string[] includes = null)
+    public async Task<IEnumerable<LessonForViewDto>> GetAllAsync(Expression<Func<Lesson, bool>> filter = null, string[] includes = null)
     {
-        var lessons =  repository.GetAll(null, includes);
+        var lessons = await repository.GetAll(filter, includes).ToListAsync();
         // You can add lang filtering here if needed
         return mapper.Map<IEnumerable<LessonForViewDto>>(lessons);
     }
