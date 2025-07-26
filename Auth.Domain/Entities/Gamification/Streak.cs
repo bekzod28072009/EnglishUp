@@ -6,7 +6,11 @@ namespace Auth.Domain.Entities.Gamification;
 public class Streak : Auditable
 {
     public long UserId { get; set; }
-    public User User { get; set; } = default!;
-    public int DaysInRow { get; set; }
-    public DateTime LastActive { get; set; }
+    public User User { get; set; }
+
+    public int CurrentStreak { get; set; }
+    public int LongestStreak { get; set; }
+    public DateOnly LastActivityDate { get; set; }
+
+    public ICollection<StreakLog> Logs { get; set; }
 }
