@@ -1,15 +1,7 @@
 ﻿namespace Auth.Service.DTOs.Tests.MockTestResultsDto;
 
-public class ResultForViewDto
+public class ResultForUpdateDto
 {
-    public long Id { get; set; }
-
-    public long UserId { get; set; }
-    public string UserFullName { get; set; }
-
-    public long MockTestId { get; set; }
-    public string MockTestTitle { get; set; }
-
     public int ListeningScore { get; set; }
     public int ReadingScore { get; set; }
     public int WritingScore { get; set; }
