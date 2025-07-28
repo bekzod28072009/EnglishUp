@@ -1,8 +1,7 @@
 ﻿namespace Auth.Service.DTOs.Homeworks.PointTransactionsDto;
 
-public class PointTransactionForCreationDto
+public class PointTransactionForUpdateDto
 {
-    public long UserId { get; set; }
     public int PointsChanged { get; set; }
     public string Reason { get; set; }
 }
