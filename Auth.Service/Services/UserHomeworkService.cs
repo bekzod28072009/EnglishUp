@@ -2,12 +2,13 @@
 using Auth.Domain.Entities.Homeworks;
 using Auth.Service.DTOs.Homeworks.UserHomeworksDto;
 using Auth.Service.Exceptions;
+using Auth.Service.Interfaces;
 using AutoMapper;
 using System.Linq.Expressions;
 
 namespace Auth.Service.Services;
 
-public class UserHomeworkService
+public class UserHomeworkService : IUserHomeworkService
 {
     private readonly IGenericRepository<UserHomework> repository;
     private readonly IMapper mapper;

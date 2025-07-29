@@ -13,16 +13,21 @@ public static class ServiceExtension
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         // Services
-        services.AddTransient<IUserService, UserService>();
-        services.AddTransient<ILessonService, LessonService>();
-        services.AddTransient<IRoleService, RoleService>();
-        services.AddTransient<IPermissionService, PermissionService>();
         services.AddTransient<ICourseService, CourseService>();
-        services.AddTransient<ILessonPartService, LessonPartService>();
-        services.AddTransient<IUserCourseService, UserCourseService>();
         services.AddTransient<IDaliyChallengeService, DailyChallengeService>();
-        services.AddTransient<IStreakService, StreakService>();
-        services.AddTransient<IStreakLogService, StreakLogService>();
         services.AddTransient<IHomeworkService, HomeworkService>();
+        services.AddTransient<ILessonPartService, LessonPartService>();
+        services.AddTransient<ILessonService, LessonService>();
+        services.AddTransient<IMockTestService, MockTestService>();
+        services.AddTransient<IPermissionService, PermissionService>();
+        services.AddTransient<IPointTransactionService, PointTransactionService>();
+        services.AddTransient<IRoleService, RoleService>();
+        services.AddTransient<IStreakLogService, StreakLogService>();
+        services.AddTransient<IStreakService, StreakService>();
+        services.AddTransient<ISubscriptionService, SubscriptionService>();
+        services.AddTransient<ITestResultService, TestResultService>();
+        services.AddTransient<IUserCourseService, UserCourseService>();
+        services.AddTransient<IUserHomeworkService, UserHomeworkService>();
+        services.AddTransient<IUserService, UserService>();
     }
 }
