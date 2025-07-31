@@ -20,14 +20,15 @@ public static class ServiceExtension
         services.AddTransient<ILessonService, LessonService>();
         services.AddTransient<IMockTestService, MockTestService>();
         services.AddTransient<IPermissionService, PermissionService>();
-        services.AddTransient<IPointTransactionService, PointTransactionService>();
         services.AddTransient<IRoleService, RoleService>();
         services.AddTransient<IStreakLogService, StreakLogService>();
         services.AddTransient<IStreakService, StreakService>();
+        services.AddTransient<ISubscriptionPlanService, SubscriptionPlanService>();
         services.AddTransient<ISubscriptionService, SubscriptionService>();
         services.AddTransient<ITestResultService, TestResultService>();
         services.AddTransient<IUserCourseService, UserCourseService>();
         services.AddTransient<IUserHomeworkService, UserHomeworkService>();
         services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IUserChallengeService, UserChallengeService>();
     }
 }

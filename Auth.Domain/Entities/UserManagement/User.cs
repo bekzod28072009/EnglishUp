@@ -12,11 +12,11 @@ public class User : Auditable
     public string Email { get; set; } = string.Empty;
     public int Age { get; set; }
     public int PhoneNumber { get; set; }
-    public string PasswordHash { get; set; } = string.Empty;    
+    public string PasswordHash { get; set; } = string.Empty;
+    public int Points { get; set; }
     public long RoleId { get; set; }
     public Role Role { get; set; } = default!;
     public ICollection<UserCourse>? UserCourses { get; set; } = new List<UserCourse>();
     public ICollection<UserHomework>? UserHomeworks { get; set; } = new List<UserHomework>();
     public ICollection<TestResult>? TestResult { get; set; } = new List<TestResult>();
-    public ICollection<PointTransaction>? Points { get; set; } = new List<PointTransaction>();
 }
