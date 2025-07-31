@@ -110,13 +110,6 @@ public class MapConfiguration : Profile
                 opt => opt.MapFrom(src => src.EndDate >= DateTime.UtcNow));
 
 
-        //// PointTransaction
-        //CreateMap<PointTransactionForCreationDto, PointTransaction>().ReverseMap();
-        //CreateMap<PointTransactionForUpdateDto, PointTransaction>().ReverseMap();
-        //CreateMap<PointTransactionForViewDto, PointTransaction>()
-        //    .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
-        //    .ReverseMap();
-
         //// DailyChallenge
         //CreateMap<DailyChallengeForCreationDto, DailyChallenge>().ReverseMap();
         //CreateMap<DailyChallengeForUpdateDto, DailyChallenge>().ReverseMap();
