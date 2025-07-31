@@ -18,4 +18,5 @@ public interface IUserService
     Task<UserForViewDto> UpdateAsync(long id, UserForUpdateDto dto);
 
     Task<bool> ChangePassword(string email, string password);
+    Task AddPointsAsync(long userId, int points);
 }

@@ -26,9 +26,12 @@ public class SubscriptionService : ISubscriptionService
         return mapper.Map<IEnumerable<SubscriptionForViewDto>>(subscriptions);
     }
 
-    public async Task<SubscriptionForViewDto> GetAsync(Expression<Func<Subscription, bool>> filter, string[] includes = null)
+    public async Task<SubscriptionForViewDto> GetAsync(long id)
     {
-        var subscription = await repository.GetAsync(filter, includes);
+        var subscription = await repository.GetAsync(
+        s => s.Id == id,
+        includes: new[] { nameof(Subscription.User), nameof(Subscription.Plan) });
+
         if (subscription is null)
             throw new HttpStatusCodeException(404, "Subscription not found");
 
@@ -67,5 +70,28 @@ public class SubscriptionService : ISubscriptionService
         await repository.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<bool> IsSubscriptionActiveAsync(long userId)
+    {
+        var now = DateTime.UtcNow;
+        var subscription = await repository.GetAsync(s => s.UserId == userId && s.EndDate >= now);
+        return subscription != null;
+    }
+
+    public async Task<SubscriptionForViewDto?> GetActiveSubscriptionAsync(long userId)
+    {
+        var now = DateTime.UtcNow;
+        var sub = await repository.GetAsync(s => s.UserId == userId && s.EndDate >= now, new[] { "User", "Plan" });
+        return sub is null ? null : mapper.Map<SubscriptionForViewDto>(sub);
+    }
+
+    public async Task ExtendSubscriptionAsync(long subscriptionId, int additionalDays)
+    {
+        var subscription = await repository.GetAsync(s => s.Id == subscriptionId)
+            ?? throw new HttpStatusCodeException(404, "Subscription not found");
+
+        subscription.EndDate = subscription.EndDate.AddDays(additionalDays);
+        await repository.SaveChangesAsync();
     }
 }

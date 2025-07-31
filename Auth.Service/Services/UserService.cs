@@ -148,4 +148,14 @@ public class UserService : IUserService
 
         return true;
     }
+    public async Task AddPointsAsync(long userId, int points)
+    {
+        var user = await _repository.GetAsync(u => u.Id == userId)
+            ?? throw new HttpStatusCodeException(404, "User not found");
+
+        user.Points += points;
+
+        await _repository.SaveChangesAsync();
+    }
+
 }

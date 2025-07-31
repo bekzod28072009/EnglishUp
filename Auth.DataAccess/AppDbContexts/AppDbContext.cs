@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
 
     // All related to User Management
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<UserChallenge> UserChallenges { get; set; }
 
     //Tokens
     public virtual DbSet<Token> Tokens { get; set; }     
@@ -41,7 +42,6 @@ public class AppDbContext : DbContext
     // All related to Homeworks
     public virtual DbSet<Homework> Homeworks { get; set; }
     public virtual DbSet<UserHomework> UserHomeworks { get; set; }
-    public virtual DbSet<PointTransaction> PointTransactions { get; set; }
 
     // All related to Tests
     public virtual DbSet<MockTest> MockTests { get; set; }
@@ -49,5 +49,6 @@ public class AppDbContext : DbContext
 
     // All related to Subscriptions
     public virtual DbSet<Subscription> Subscriptions { get; set; }
+    public virtual DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
 
 }

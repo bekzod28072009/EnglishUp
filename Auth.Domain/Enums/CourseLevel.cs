@@ -3,6 +3,7 @@
 public enum CourseLevel
 {
     Beginner,
+    Elementary,
     PreIntermediate,
     Intermediate,
     UpperIntermediate,

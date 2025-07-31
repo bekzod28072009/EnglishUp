@@ -1,26 +1,18 @@
 ﻿using Auth.Domain.Entities.Courses;
-using Auth.Domain.Entities.Gamification;
 using Auth.Domain.Entities.Homeworks;
 using Auth.Domain.Entities.Permissions;
 using Auth.Domain.Entities.Roles;
 using Auth.Domain.Entities.Subscriptions;
-using Auth.Domain.Entities.Tests;
 using Auth.Domain.Entities.UserManagement;
 using Auth.Service.DTOs.Courses.CoursesDto;
 using Auth.Service.DTOs.Courses.LessonPartsDto;
 using Auth.Service.DTOs.Courses.LessonsDto;
 using Auth.Service.DTOs.Courses.UserCoursesDto;
-using Auth.Service.DTOs.Gamification.DailyChallengesDto;
-using Auth.Service.DTOs.Gamification.StreakLogDto;
-using Auth.Service.DTOs.Gamification.StreaksDto;
 using Auth.Service.DTOs.Homeworks.HomeworksDto;
-using Auth.Service.DTOs.Homeworks.PointTransactionsDto;
 using Auth.Service.DTOs.Homeworks.UserHomeworksDto;
 using Auth.Service.DTOs.Permissions;
 using Auth.Service.DTOs.Roles;
 using Auth.Service.DTOs.Subscriptions;
-using Auth.Service.DTOs.Tests.MockTestResultsDto;
-using Auth.Service.DTOs.Tests.MockTestsDto;
 using Auth.Service.DTOs.Users;
 using AutoMapper;
 
@@ -106,14 +98,16 @@ public class MapConfiguration : Profile
 
         // Subscription
         CreateMap<SubscriptionForCreateDto, Subscription>().ReverseMap();
-        CreateMap<SubscriptionForUpdateDto, Subscription>().ReverseMap();
+        CreateMap<SubscriptionForUpdateDto, Subscription>().ReverseMap(); 
         CreateMap<Subscription, SubscriptionForViewDto>()
-            .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName))
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()))
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.EndDate >= DateTime.UtcNow))
-            .ReverseMap()
-            .ForMember(dest => dest.User, opt => opt.Ignore());
+            .ForMember(dest => dest.UserFullName,
+                opt => opt.MapFrom(src => src.User.FullName))
+            .ForMember(dest => dest.PlanName,
+                opt => opt.MapFrom(src => src.Plan.Name))
+            .ForMember(dest => dest.PlanPrice,
+                opt => opt.MapFrom(src => src.Plan.Price))
+            .ForMember(dest => dest.IsActive,
+                opt => opt.MapFrom(src => src.EndDate >= DateTime.UtcNow));
 
 
         //// PointTransaction
