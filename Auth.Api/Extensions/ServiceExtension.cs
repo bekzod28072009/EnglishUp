@@ -14,6 +14,7 @@ public static class ServiceExtension
 
         // Services
         services.AddTransient<ICourseService, CourseService>();
+        services.AddTransient<ICourseLevelService, CourseLevelService>();
         services.AddTransient<IDaliyChallengeService, DailyChallengeService>();
         services.AddTransient<IHomeworkService, HomeworkService>();
         services.AddTransient<ILessonPartService, LessonPartService>();
@@ -23,8 +24,8 @@ public static class ServiceExtension
         services.AddTransient<IRoleService, RoleService>();
         services.AddTransient<IStreakLogService, StreakLogService>();
         services.AddTransient<IStreakService, StreakService>();
-        services.AddTransient<ISubscriptionPlanService, SubscriptionPlanService>();
         services.AddTransient<ISubscriptionService, SubscriptionService>();
+        services.AddTransient<ISubscriptionPlanService, SubscriptionPlanService>();
         services.AddTransient<ITestResultService, TestResultService>();
         services.AddTransient<IUserCourseService, UserCourseService>();
         services.AddTransient<IUserHomeworkService, UserHomeworkService>();

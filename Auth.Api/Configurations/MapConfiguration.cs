@@ -1,17 +1,23 @@
 ﻿using Auth.Domain.Entities.Courses;
+using Auth.Domain.Entities.Gamification;
 using Auth.Domain.Entities.Homeworks;
 using Auth.Domain.Entities.Permissions;
 using Auth.Domain.Entities.Roles;
 using Auth.Domain.Entities.Subscriptions;
 using Auth.Domain.Entities.UserManagement;
+using Auth.Service.DTOs.Courses.CourseLevelsDto;
 using Auth.Service.DTOs.Courses.CoursesDto;
 using Auth.Service.DTOs.Courses.LessonPartsDto;
 using Auth.Service.DTOs.Courses.LessonsDto;
 using Auth.Service.DTOs.Courses.UserCoursesDto;
+using Auth.Service.DTOs.Gamification.DailyChallengesDto;
+using Auth.Service.DTOs.Gamification.StreakLogDto;
+using Auth.Service.DTOs.Gamification.StreaksDto;
 using Auth.Service.DTOs.Homeworks.HomeworksDto;
 using Auth.Service.DTOs.Homeworks.UserHomeworksDto;
 using Auth.Service.DTOs.Permissions;
 using Auth.Service.DTOs.Roles;
+using Auth.Service.DTOs.SubscriptionPlans;
 using Auth.Service.DTOs.Subscriptions;
 using Auth.Service.DTOs.Users;
 using AutoMapper;
@@ -109,25 +115,30 @@ public class MapConfiguration : Profile
             .ForMember(dest => dest.IsActive,
                 opt => opt.MapFrom(src => src.EndDate >= DateTime.UtcNow));
 
+        //CourseLevel
+        CreateMap<CourseLevelForViewDto, CourseLevel>().ReverseMap();
+        CreateMap<CourseLevelForCreationDto, CourseLevel>().ReverseMap();
+        CreateMap<CourseLevelForUpdateDto, CourseLevel>().ReverseMap();
 
-        //// DailyChallenge
-        //CreateMap<DailyChallengeForCreationDto, DailyChallenge>().ReverseMap();
-        //CreateMap<DailyChallengeForUpdateDto, DailyChallenge>().ReverseMap();
-        //CreateMap<DailyChallengeForViewDto, DailyChallenge>().ReverseMap();
+        // DailyChallenge mappings
+        CreateMap<DailyChallengeForViewDto, DailyChallengge>();
+        CreateMap<DailyChallengeForCreateDto, DailyChallengge>();
+        CreateMap<DailyChallengeForUpdateDto, DailyChallengge>();
 
-        //// Streak
-        //CreateMap<StreakForCreationDto, Streak>().ReverseMap();
-        //CreateMap<StreakForUpdateDto, Streak>().ReverseMap();
-        //CreateMap<StreakForViewDto, Streak>()
-        //    .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
-        //    .ReverseMap();
+        // SubscriptionPlan mappings
+        CreateMap<SubscriptionPlan, SubscriptionPlanForViewDto>();
+        CreateMap<SubscriptionPlanForCreationDto, SubscriptionPlan>();
+        CreateMap<SubscriptionPlanForUpdateDto, SubscriptionPlan>();
 
-        //// StreakLog
-        //CreateMap<StreakLogForCreationDto, StreakLog>().ReverseMap();
-        //CreateMap<StreakLogForUpdateDto, StreakLog>().ReverseMap();
-        //CreateMap<StreakLogForViewDto, StreakLog>()
-        //    .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
-        //    .ReverseMap();
+        // Streak mappings
+        CreateMap<Streak, StreakForViewDto>();
+        CreateMap<StreakForCreationDto, Streak>();
+        CreateMap<StreakForUpdateDto, Streak>();
+
+        // StreakLog mappings
+        CreateMap<StreakLog, StreakLogForViewDto>();
+        CreateMap<StreakLogForCreationDto, StreakLog>();
+        CreateMap<StreakLogForUpdateDto, StreakLog>();
 
         //// MockTest
         //CreateMap<MockTestForCreationDto, MockTest>().ReverseMap();
