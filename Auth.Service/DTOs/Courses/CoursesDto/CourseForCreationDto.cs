@@ -4,7 +4,7 @@ namespace Auth.Service.DTOs.Courses.CoursesDto;
 
 public class CourseForCreationDto
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public CourseLevel Level { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public long LevelId { get; set; }
 }

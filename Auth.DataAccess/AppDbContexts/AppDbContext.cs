@@ -26,6 +26,7 @@ public class AppDbContext : DbContext
 
     //All related to Courses
     public virtual DbSet<Course> Courses { get; set; }
+    public virtual DbSet<CourseLevel> CourseLevels { get; set; }    
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<Lesson> Lessons { get; set; }
     public virtual DbSet<LessonPart> LessonsPart { get; set; }

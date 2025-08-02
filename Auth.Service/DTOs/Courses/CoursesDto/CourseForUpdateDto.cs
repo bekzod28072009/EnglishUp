@@ -6,5 +6,5 @@ public class CourseForUpdateDto
 {
     public string? Title { get; set; }
     public string? Description { get; set; }
-    public CourseLevel Level { get; set; }
+    public long? LevelId { get; set; }
 }
