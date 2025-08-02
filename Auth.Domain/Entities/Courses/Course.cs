@@ -11,4 +11,6 @@ public class Course : Auditable
     public CourseLevel Level { get; set; }
     public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
     public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
+    public ICollection<CourseComment> Comments { get; set; } = new List<CourseComment>();
+
 }
