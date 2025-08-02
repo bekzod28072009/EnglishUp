@@ -19,4 +19,6 @@ public class User : Auditable
     public ICollection<UserCourse>? UserCourses { get; set; } = new List<UserCourse>();
     public ICollection<UserHomework>? UserHomeworks { get; set; } = new List<UserHomework>();
     public ICollection<TestResult>? TestResult { get; set; } = new List<TestResult>();
+    public ICollection<CourseComment>? CourseComments { get; set; } = new List<CourseComment>();
+
 }
