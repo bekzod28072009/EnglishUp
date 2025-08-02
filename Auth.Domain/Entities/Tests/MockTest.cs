@@ -1,4 +1,5 @@
 ﻿using Auth.Domain.Common;
+using Auth.Domain.Entities.Courses;
 using Auth.Domain.Enums;
 
 namespace Auth.Domain.Entities.Tests;

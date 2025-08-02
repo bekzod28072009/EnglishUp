@@ -1,4 +1,5 @@
-﻿using Auth.Domain.Enums;
+﻿using Auth.Domain.Entities.Courses;
+using Auth.Domain.Enums;
 using Auth.Service.DTOs.Tests.MockTestResultsDto;
 
 namespace Auth.Service.DTOs.Tests.MockTestsDto;
