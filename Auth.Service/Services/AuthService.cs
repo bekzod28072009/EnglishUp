@@ -6,6 +6,7 @@ using Auth.Service.DTOs.TokensDto;
 using Auth.Service.Exceptions;
 using Auth.Service.Interfaces;
 using Auth.Service.Security;
+using Auth.Service.Helpers;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -15,6 +16,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
+using TokenValidationResult = Auth.Service.Helpers.TokenValidationResult;
 
 namespace Auth.Service.Services;
 
@@ -249,6 +251,50 @@ public class AuthService : IAuthService
         {
             Console.WriteLine($"Error processing token: {ex.Message}");
             throw;
+        }
+    }
+
+
+    TokenValidationResult IAuthService.ValidateToken(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return new TokenValidationResult
+            {
+                IsValid = false,
+                Message = "Token is empty or missing."
+            };
+        }
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var expiryDate = jwtToken.ValidTo;
+
+            if (expiryDate < DateTime.UtcNow)
+            {
+                return new TokenValidationResult
+                {
+                    IsValid = false,
+                    IsExpired = true,
+                    Message = "Token has expired."
+                };
+            }
+
+            return new TokenValidationResult
+            {
+                IsValid = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return new TokenValidationResult
+            {
+                IsValid = false,
+                Message = $"Token is invalid: {ex.Message}"
+            };
         }
     }
 }
