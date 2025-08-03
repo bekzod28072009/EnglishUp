@@ -1,5 +1,7 @@
 ﻿using Auth.DataAccess.Interface;
 using Auth.Domain.Entities.Courses;
+using Auth.Domain.Entities.UserManagement;
+using Auth.Service.DTOs.Courses.CourseCommentsDto;
 using Auth.Service.DTOs.Courses.UserCoursesDto;
 using Auth.Service.Exceptions;
 using Auth.Service.Helpers;
@@ -11,13 +13,16 @@ namespace Auth.Service.Services;
 
 public class UserCourseService : IUserCourseService
 {
+    private readonly IGenericRepository<CourseComment> commentRepository;
     private readonly IGenericRepository<UserCourse> repository;
     private readonly IMapper mapper;
 
-    public UserCourseService(IGenericRepository<UserCourse> repository, IMapper mapper)
+    public UserCourseService(IGenericRepository<UserCourse> repository, IMapper mapper, 
+        IGenericRepository<CourseComment> commentRepository)
     {
         this.repository = repository;
         this.mapper = mapper;
+        this.commentRepository = commentRepository;
     }
 
     public async Task<IEnumerable<UserCourseForViewDto>> GetAllAsync(Expression<Func<UserCourse, bool>> filter = null, string[] includes = null)
@@ -68,20 +73,28 @@ public class UserCourseService : IUserCourseService
         return true;
     }
 
-    public async Task<bool> AddCommentAsync(UserCourseCommentDto dto)
+    public async Task<bool> AddCommentAsync(CourseCommentForCreationDto dto)
     {
+        // Check if user bought the course
         var userCourse = await repository.GetAsync(x =>
-            x.UserId == dto.UserId && x.CourseId == dto.CourseId);
+                x.UserId == dto.UserId && x.CourseId == dto.CourseId);
 
         if (userCourse == null)
             throw new Exception("Siz bu kursni sotib olmagansiz va comment yoza olmaysiz.");
 
-        userCourse.CommentText = dto.CommentText;
-        userCourse.Rating = dto.Rating;
-        userCourse.UpdatedAt = DateTime.UtcNow;
+        var comment = new CourseComment
+        {
+            UserId = dto.UserId,
+            CourseId = dto.CourseId,
+            Content = dto.Content,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = dto.UserId
+        };
 
-        repository.Update(userCourse);
-        await repository.SaveChangesAsync();
+        await commentRepository.CreateAsync(comment);
+        await commentRepository.SaveChangesAsync();
+
         return true;
+
     }
 }

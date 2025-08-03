@@ -11,4 +11,6 @@ public interface IUserHomeworkService
     Task<UserHomeworkForViewDto> CreateAsync(UserHomeworkForCreationDto dto);
     Task<UserHomeworkForViewDto> UpdateAsync(long id, UserHomeworkForUpdateDto dto);
     Task<bool> DeleteAsync(Expression<Func<UserHomework, bool>> filter);
+    Task<UserHomeworkForViewDto> CompleteHomeworkAsync(UserHomeworkForCreationDto dto);
+
 }

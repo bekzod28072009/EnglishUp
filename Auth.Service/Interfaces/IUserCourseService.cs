@@ -1,5 +1,6 @@
 ﻿using Auth.Domain.Entities.Courses;
 using Auth.Domain.Entities.Gamification;
+using Auth.Service.DTOs.Courses.CourseCommentsDto;
 using Auth.Service.DTOs.Courses.UserCoursesDto;
 using System.Linq.Expressions;
 
@@ -14,5 +15,5 @@ public interface IUserCourseService
     Task<UserCourseForViewDto> UpdateAsync(long id, UserCourseForUpdateDto dto);
     Task<bool> DeleteAsync(Expression<Func<UserCourse, bool>> filter);
 
-    Task<bool> AddCommentAsync(UserCourseCommentDto dto);
+    Task<bool> AddCommentAsync(CourseCommentForCreationDto dto);
 }
