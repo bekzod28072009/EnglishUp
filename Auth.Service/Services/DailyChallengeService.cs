@@ -13,6 +13,7 @@ namespace Auth.Service.Services;
 
 public class DailyChallengeService : IDaliyChallengeService
 {
+    private readonly IGenericRepository<User> userRepository;
     private readonly IGenericRepository<UserChallenge> userChallengeRepository;
     private readonly IGenericRepository<DailyChallengge> challengeRepository;
     private readonly IUserService userService;
@@ -21,12 +22,14 @@ public class DailyChallengeService : IDaliyChallengeService
     public DailyChallengeService(IGenericRepository<UserChallenge> userChallengeRepository,
     IGenericRepository<DailyChallengge> challengeRepository,
     IUserService userService,
-        IMapper mapper)
+        IMapper mapper,
+        IGenericRepository<User> userRepository)
     {
         this.userChallengeRepository = userChallengeRepository;
         this.challengeRepository = challengeRepository;
         this.userService = userService;
         this.mapper = mapper;
+        this.userRepository = userRepository;
     }
 
     public async Task<DailyChallengeForViewDto> CreateAsync(DailyChallengeForCreateDto dto)
@@ -108,6 +111,9 @@ public class DailyChallengeService : IDaliyChallengeService
         // Validate challenge existence
         var challenge = await challengeRepository.GetAsync(c => c.Id == dto.ChallengeId)
             ?? throw new HttpStatusCodeException(404, "Daily challenge not found");
+
+        var user = await userRepository.GetAsync(u => u.Id == dto.UserId)
+            ?? throw new HttpStatusCodeException(404, "User not found");
 
         // Check if already completed
         var exists = await userChallengeRepository.GetAsync(

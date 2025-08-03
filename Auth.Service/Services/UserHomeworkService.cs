@@ -1,5 +1,6 @@
 ﻿using Auth.DataAccess.Interface;
 using Auth.Domain.Entities.Homeworks;
+using Auth.Domain.Entities.UserManagement;
 using Auth.Service.DTOs.Homeworks.UserHomeworksDto;
 using Auth.Service.Exceptions;
 using Auth.Service.Interfaces;
@@ -10,13 +11,22 @@ namespace Auth.Service.Services;
 
 public class UserHomeworkService : IUserHomeworkService
 {
+    private readonly IGenericRepository<User> userRepository;
+    private readonly IGenericRepository<Homework> homeworkRepository;
     private readonly IGenericRepository<UserHomework> repository;
+    private readonly IUserService userService;
     private readonly IMapper mapper;
 
-    public UserHomeworkService(IGenericRepository<UserHomework> repository, IMapper mapper)
+    public UserHomeworkService(IGenericRepository<UserHomework> repository, IMapper mapper, 
+        IGenericRepository<User> userRepository,
+        IUserService userService,
+        IGenericRepository<Homework> genericRepository)
     {
         this.repository = repository;
         this.mapper = mapper;
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.homeworkRepository = genericRepository;
     }
 
     public async Task<IEnumerable<UserHomeworkForViewDto>> GetAllAsync(Expression<Func<UserHomework, bool>> filter = null, string[] includes = null)
@@ -66,4 +76,37 @@ public class UserHomeworkService : IUserHomeworkService
         await repository.SaveChangesAsync();
         return true;
     }
+
+    public async Task<UserHomeworkForViewDto> CompleteHomeworkAsync(UserHomeworkForCreationDto dto)
+    {
+        var homework = await homeworkRepository.GetAsync(h => h.Id == dto.HomeworkId)
+            ?? throw new HttpStatusCodeException(404, "Homework not found");
+
+        var user = await userRepository.GetAsync(u => u.Id == dto.UserId)
+            ?? throw new HttpStatusCodeException(404, "User not found");
+
+        // Check if already completed
+        var existing = await repository.GetAsync(uh =>
+            uh.UserId == dto.UserId && uh.HomeworkId == dto.HomeworkId);
+
+        if (existing is not null)
+            throw new AlreadyExistsException("This homework is already completed by the user");
+
+        var userHomework = new UserHomework
+        {
+            UserId = dto.UserId,
+            HomeworkId = dto.HomeworkId,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await repository.CreateAsync(userHomework);
+
+        // ✅ Add 1 point for completing homework
+        await userService.AddPointsAsync(dto.UserId, 1);
+
+        await repository.SaveChangesAsync();
+
+        return mapper.Map<UserHomeworkForViewDto>(userHomework);
+    }
+
 }
