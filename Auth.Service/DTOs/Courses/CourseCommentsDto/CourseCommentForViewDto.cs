@@ -3,9 +3,9 @@
 public class CourseCommentForViewDto
 {
     public long Id { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public int Rating { get; set; }
     public long UserId { get; set; }
     public string UserFullName { get; set; } = string.Empty;
-    public long CourseId { get; set; }
-    public string Content { get; set; } = string.Empty;
-    public DateTime CommentedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

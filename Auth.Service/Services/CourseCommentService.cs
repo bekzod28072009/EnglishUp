@@ -2,13 +2,14 @@
 using Auth.Domain.Entities.Courses;
 using Auth.Service.DTOs.Courses.CourseCommentsDto;
 using Auth.Service.Exceptions;
+using Auth.Service.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace Auth.Service.Services;
 
-public class CourseCommentService
+public class CourseCommentService : ICourseCommentService
 {
     private readonly IGenericRepository<CourseComment> repository;
     private readonly IMapper mapper;
@@ -32,32 +33,34 @@ public class CourseCommentService
 
     public async Task<IEnumerable<CourseCommentForViewDto>> GetCommentsByCourseIdAsync(long courseId)
     {
-        var comments = await repository.GetAll(
-            c => c.CourseId == courseId,
-            includes: new[] { nameof(CourseComment.User) }).ToListAsync();
-
-        return comments.Select(comment => new CourseCommentForViewDto
-        {
-            Id = comment.Id,
-            UserId = comment.UserId,
-            UserFullName = comment.User?.FullName ?? "Unknown",
-            CourseId = comment.CourseId,
-            Content = comment.Content,
-            CommentedAt = comment.CreatedAt
-        });
+        var comments =  repository.GetAll(c => c.CourseId == courseId, new[] { "User" });
+        return comments.Select(c => mapper.Map<CourseCommentForViewDto>(c));
     }
 
-    public async Task<CourseCommentForViewDto> UpdateAsync(long commentId, long userId, CourseCommentForUpdateDto dto)
+    public async Task<CourseCommentForViewDto> UpdateAsync(long commentId, CourseCommentForUpdateDto dto)
     {
-        var comment = await repository.GetAsync(c => c.Id == commentId && c.UserId == userId, new[] { "User" })
-            ?? throw new HttpStatusCodeException(404, "Comment not found or you don't have permission to update this.");
+        var comment = await repository.GetAsync(c => c.Id == commentId)
+        ?? throw new HttpStatusCodeException(404, "Comment not found");
 
         comment.Content = dto.Content;
+        comment.Rating = dto.Rating;
         comment.UpdatedAt = DateTime.UtcNow;
 
+        repository.Update(comment);
         await repository.SaveChangesAsync();
 
         return mapper.Map<CourseCommentForViewDto>(comment);
+    }
+
+    public async Task<bool> DeleteCommentAsync(long commentId)
+    {
+        var comment = await repository.GetAsync(c => c.Id == commentId)
+            ?? throw new HttpStatusCodeException(404, "Comment not found");
+
+        await repository.DeleteAsync(comment);
+        await repository.SaveChangesAsync();
+
+        return true;
     }
 
 }

@@ -2,6 +2,9 @@
 using Auth.DataAccess.Repository;
 using Auth.Service.Interfaces;
 using Auth.Service.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Auth.Api.Extensions;
 
@@ -31,5 +34,66 @@ public static class ServiceExtension
         services.AddTransient<IUserHomeworkService, UserHomeworkService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IUserChallengeService, UserChallengeService>();
+        services.AddTransient<ICourseCommentService, CourseCommentService>();
+
     }
+
+
+
+    public static void AddJwtService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(o =>
+        {
+            var Key = Encoding.UTF8.GetBytes(configuration["JWT:Key"]);
+            o.SaveToken = true;
+            o.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["JWT:Issuer"],
+                ValidAudience = configuration["JWT:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Key)
+            };
+        });
+
+        services.AddControllers();
+
+
+    }
+
+    //public static void AddSwaggerService(this IServiceCollection services)
+    //{
+    //    services.AddSwaggerService(p =>
+    //    {
+    //        p.ResolveConflictingActions(ad => ad.First());
+    //        p.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    //        {
+    //            Name = "Authorization",
+    //            Type = SecuritySchemeType.ApiKey,
+    //            BearerFormat = "JWT",
+    //            In = ParameterLocation.Header,
+    //        });
+
+    //        p.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //            {
+    //                {
+    //                    new OpenApiSecurityScheme()
+    //                    {
+    //                        Reference = new OpenApiReference()
+    //                        {
+    //                            Type = ReferenceType.SecurityScheme,
+    //                            Id = "Bearer"
+    //                        }
+    //                    },
+    //                    new string[] { }
+    //                }
+    //            });
+    //    });
+    //}
 }

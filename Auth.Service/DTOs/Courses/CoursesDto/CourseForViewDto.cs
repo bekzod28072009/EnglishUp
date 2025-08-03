@@ -1,4 +1,6 @@
-﻿namespace Auth.Service.DTOs.Courses.CoursesDto;
+﻿using Auth.Service.DTOs.Courses.CourseCommentsDto;
+
+namespace Auth.Service.DTOs.Courses.CoursesDto;
 
 public class CourseForViewDto
 {
@@ -8,4 +10,5 @@ public class CourseForViewDto
 
     public long LevelId { get; set; }
     public string LevelName { get; set; } = string.Empty;
+    public List<CourseCommentForViewDto> Comments { get; set; } = new();
 }

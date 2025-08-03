@@ -12,5 +12,6 @@ public class CourseComment : Auditable
     public Course Course { get; set; } = default!;
 
     public string Content { get; set; } = string.Empty;
+    public int Rating { get; set; } // optional
 
 }

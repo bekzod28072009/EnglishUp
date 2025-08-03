@@ -4,7 +4,9 @@ using Auth.Domain.Entities.Homeworks;
 using Auth.Domain.Entities.Permissions;
 using Auth.Domain.Entities.Roles;
 using Auth.Domain.Entities.Subscriptions;
+using Auth.Domain.Entities.Tests;
 using Auth.Domain.Entities.UserManagement;
+using Auth.Service.DTOs.Courses.CourseCommentsDto;
 using Auth.Service.DTOs.Courses.CourseLevelsDto;
 using Auth.Service.DTOs.Courses.CoursesDto;
 using Auth.Service.DTOs.Courses.LessonPartsDto;
@@ -19,6 +21,9 @@ using Auth.Service.DTOs.Permissions;
 using Auth.Service.DTOs.Roles;
 using Auth.Service.DTOs.SubscriptionPlans;
 using Auth.Service.DTOs.Subscriptions;
+using Auth.Service.DTOs.Tests.MockTestResultsDto;
+using Auth.Service.DTOs.Tests.MockTestsDto;
+using Auth.Service.DTOs.UserChallenges;
 using Auth.Service.DTOs.Users;
 using AutoMapper;
 
@@ -28,30 +33,20 @@ public class MapConfiguration : Profile
 {
     public MapConfiguration()
     {
-        // User
-        CreateMap<UserForCreationDto, User>().ReverseMap();
-        CreateMap<UserForUpdateDto, User>().ReverseMap();
-        CreateMap<UserForViewDto, User>()
-            .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
-                src.RoleName != null ? new Role { Name = src.RoleName } : null))
-            .ReverseMap()
-            .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src =>
-                src.Role != null ? src.Role.Name : null));
-
-        // Role
-        CreateMap<RoleForCreationDto, Role>().ReverseMap();
-        CreateMap<RoleForUpdateDto, Role>().ReverseMap();
-        CreateMap<RoleForViewDto, Role>().ReverseMap();
-
-        // Permission
-        CreateMap<PermissionForCreateDto, Permission>().ReverseMap();
-        CreateMap<PermissionForUpdateDto, Permission>().ReverseMap();
-        CreateMap<PermissionForViewDto, Permission>().ReverseMap();
-
         // Course
-        CreateMap<CourseForCreationDto, Course>().ReverseMap();
-        CreateMap<CourseForUpdateDto, Course>().ReverseMap();
-        CreateMap<CourseForViewDto, Course>().ReverseMap();
+        CreateMap<Course, CourseForViewDto>().ReverseMap();
+        CreateMap<Course, CourseForCreationDto>().ReverseMap();
+        CreateMap<Course, CourseForUpdateDto>().ReverseMap();
+
+        // CourseComment
+        CreateMap<CourseComment, CourseCommentForViewDto>().ReverseMap();
+        CreateMap<CourseComment, CourseCommentForCreationDto>().ReverseMap();
+        CreateMap<CourseComment, CourseCommentForUpdateDto>().ReverseMap();
+
+        // CourseLevel
+        CreateMap<CourseLevel, CourseLevelForViewDto>().ReverseMap();
+        CreateMap<CourseLevel, CourseLevelForCreationDto>().ReverseMap();
+        CreateMap<CourseLevel, CourseLevelForUpdateDto>().ReverseMap();
 
         // Lesson
         CreateMap<LessonForCreationDto, Lesson>().ReverseMap();
@@ -65,9 +60,35 @@ public class MapConfiguration : Profile
 
 
         // LessonPart
-        CreateMap<LessonPartForCreationDto, LessonPart>().ReverseMap();
-        CreateMap<LessonPartForUpdateDto, LessonPart>().ReverseMap();
-        CreateMap<LessonPartForViewDto, LessonPart>();
+        CreateMap<LessonPart, LessonPartForViewDto>().ReverseMap();
+        CreateMap<LessonPart, LessonPartForCreationDto>().ReverseMap();
+        CreateMap<LessonPart, LessonPartForUpdateDto>().ReverseMap();
+
+        // UserCourse
+        CreateMap<UserCourseForCreationDto, UserCourse>().ReverseMap();
+        CreateMap<UserCourseForUpdateDto, UserCourse>().ReverseMap();
+        CreateMap<UserCourse, UserCourseForViewDto>()
+            .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName))
+            .ForMember(dest => dest.CourseTitle, opt => opt.MapFrom(src => src.Course.Title))
+            .ReverseMap()
+            .ForMember(dest => dest.User, opt => opt.Ignore())
+            .ForMember(dest => dest.Course, opt => opt.Ignore());
+
+
+        // DailyChallenge
+        CreateMap<DailyChallengge, DailyChallengeForViewDto>().ReverseMap();
+        CreateMap<DailyChallengge, DailyChallengeForCreateDto>().ReverseMap();
+        CreateMap<DailyChallengge, DailyChallengeForUpdateDto>().ReverseMap();
+
+        // Streak
+        CreateMap<Streak, StreakForViewDto>().ReverseMap();
+        CreateMap<Streak, StreakForCreationDto>().ReverseMap();
+        CreateMap<Streak, StreakForUpdateDto>().ReverseMap();
+
+        // StreakLog
+        CreateMap<StreakLog, StreakLogForViewDto>().ReverseMap();
+        CreateMap<StreakLog, StreakLogForCreationDto>().ReverseMap();
+        CreateMap<StreakLog, StreakLogForUpdateDto>().ReverseMap();
 
         // Homework
         CreateMap<HomeworkForCreationDto, Homework>().ReverseMap();
@@ -91,20 +112,19 @@ public class MapConfiguration : Profile
             .ForMember(dest => dest.Homework, opt => opt.Ignore());
 
 
-        // UserCourse
-        CreateMap<UserCourseForCreationDto, UserCourse>().ReverseMap();
-        CreateMap<UserCourseForUpdateDto, UserCourse>().ReverseMap();
-        CreateMap<UserCourse, UserCourseForViewDto>()
-            .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName))
-            .ForMember(dest => dest.CourseTitle, opt => opt.MapFrom(src => src.Course.Title))
-            .ReverseMap()
-            .ForMember(dest => dest.User, opt => opt.Ignore())
-            .ForMember(dest => dest.Course, opt => opt.Ignore());
+        // Permission
+        CreateMap<Permission, PermissionForViewDto>().ReverseMap();
+        CreateMap<Permission, PermissionForCreateDto>().ReverseMap();
+        CreateMap<Permission, PermissionForUpdateDto>().ReverseMap();
 
+        // Role
+        CreateMap<Role, RoleForViewDto>().ReverseMap();
+        CreateMap<Role, RoleForCreationDto>().ReverseMap();
+        CreateMap<Role, RoleForUpdateDto>().ReverseMap();
 
         // Subscription
         CreateMap<SubscriptionForCreateDto, Subscription>().ReverseMap();
-        CreateMap<SubscriptionForUpdateDto, Subscription>().ReverseMap(); 
+        CreateMap<SubscriptionForUpdateDto, Subscription>().ReverseMap();
         CreateMap<Subscription, SubscriptionForViewDto>()
             .ForMember(dest => dest.UserFullName,
                 opt => opt.MapFrom(src => src.User.FullName))
@@ -115,43 +135,37 @@ public class MapConfiguration : Profile
             .ForMember(dest => dest.IsActive,
                 opt => opt.MapFrom(src => src.EndDate >= DateTime.UtcNow));
 
-        //CourseLevel
-        CreateMap<CourseLevelForViewDto, CourseLevel>().ReverseMap();
-        CreateMap<CourseLevelForCreationDto, CourseLevel>().ReverseMap();
-        CreateMap<CourseLevelForUpdateDto, CourseLevel>().ReverseMap();
 
-        // DailyChallenge mappings
-        CreateMap<DailyChallengeForViewDto, DailyChallengge>();
-        CreateMap<DailyChallengeForCreateDto, DailyChallengge>();
-        CreateMap<DailyChallengeForUpdateDto, DailyChallengge>();
+        // SubscriptionPlan
+        CreateMap<SubscriptionPlan, SubscriptionPlanForViewDto>().ReverseMap();
+        CreateMap<SubscriptionPlan, SubscriptionPlanForCreationDto>().ReverseMap();
+        CreateMap<SubscriptionPlan, SubscriptionPlanForUpdateDto>().ReverseMap();
 
-        // SubscriptionPlan mappings
-        CreateMap<SubscriptionPlan, SubscriptionPlanForViewDto>();
-        CreateMap<SubscriptionPlanForCreationDto, SubscriptionPlan>();
-        CreateMap<SubscriptionPlanForUpdateDto, SubscriptionPlan>();
+        // MockTest
+        CreateMap<MockTest, MockTestForViewDto>().ReverseMap();
+        CreateMap<MockTest, MockTestForCreationDto>().ReverseMap();
+        CreateMap<MockTest, MockTestForUpdateDto>().ReverseMap();
 
-        // Streak mappings
-        CreateMap<Streak, StreakForViewDto>();
-        CreateMap<StreakForCreationDto, Streak>();
-        CreateMap<StreakForUpdateDto, Streak>();
+        // TestResult
+        CreateMap<TestResult, ResultForViewDto>().ReverseMap();
+        CreateMap<TestResult, ResultForCreationDto>().ReverseMap();
+        CreateMap<TestResult, ResultForUpdateDto>().ReverseMap();
 
-        // StreakLog mappings
-        CreateMap<StreakLog, StreakLogForViewDto>();
-        CreateMap<StreakLogForCreationDto, StreakLog>();
-        CreateMap<StreakLogForUpdateDto, StreakLog>();
+        // User
+        CreateMap<UserForCreationDto, User>().ReverseMap();
+        CreateMap<UserForUpdateDto, User>().ReverseMap();
+        CreateMap<UserForViewDto, User>()
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
+                src.RoleName != null ? new Role { Name = src.RoleName } : null))
+            .ReverseMap()
+            .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src =>
+                src.Role != null ? src.Role.Name : null));
 
-        //// MockTest
-        //CreateMap<MockTestForCreationDto, MockTest>().ReverseMap();
-        //CreateMap<MockTestForUpdateDto, MockTest>().ReverseMap();
-        //CreateMap<MockTestForViewDto, MockTest>().ReverseMap();
 
-        //// TestResult
-        //CreateMap<ResultForCreationDto, TestResult>().ReverseMap();
-        //CreateMap<ResultForUpdateDto, TestResult>().ReverseMap();
-        //CreateMap<ResultForViewDto, TestResult>()
-        //    .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
-        //    .ForMember(dest => dest.MockTestTitle, opt => opt.MapFrom(src => src.MockTest != null ? src.MockTest.Title : null))
-        //    .ReverseMap();
+        // UserChallenge
+        CreateMap<UserChallenge, UserChallengeForViewDto>().ReverseMap();
+        CreateMap<UserChallenge, UserChallengeForCreationDto>().ReverseMap();
+
 
     }
 }
