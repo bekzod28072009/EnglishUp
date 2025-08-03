@@ -19,7 +19,15 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MapConfiguration).Assem
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "EnglishUp API",
+        Version = "v1",
+        Description = "An API for the English learning platform"
+    });
+});
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi  
 builder.Services.AddOpenApi();
@@ -30,6 +38,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
