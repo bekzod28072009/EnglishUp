@@ -17,6 +17,7 @@ public static class ServiceExtension
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         // Services
+        services.AddTransient<IAuthService, AuthService>();
         services.AddTransient<ICourseService, CourseService>();
         services.AddTransient<ICourseLevelService, CourseLevelService>();
         services.AddTransient<IDaliyChallengeService, DailyChallengeService>();
