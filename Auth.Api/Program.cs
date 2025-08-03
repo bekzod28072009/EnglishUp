@@ -10,11 +10,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.  
-builder.Services.AddServices(); // Custom extension method to add services  
-// Fix for CS1503: Use a lambda to configure AutoMapper  
+
+
+builder.Services.AddServices(); 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MapConfiguration).Assembly));
 
-
+builder.Services.AddJwtService(builder.Configuration);
+builder.Services.AddSwaggerService();
 
 
 builder.Services.AddControllers();
