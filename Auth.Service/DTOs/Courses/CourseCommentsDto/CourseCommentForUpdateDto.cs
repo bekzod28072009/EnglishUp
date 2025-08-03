@@ -3,4 +3,5 @@
 public class CourseCommentForUpdateDto
 {
     public string Content { get; set; } = string.Empty;
+    public int Rating { get; set; }
 }
