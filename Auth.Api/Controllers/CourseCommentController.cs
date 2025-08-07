@@ -1,4 +1,5 @@
 ﻿using Auth.Service.DTOs.Courses.CourseCommentsDto;
+using Auth.Service.Helpers;
 using Auth.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,17 +40,40 @@ namespace Auth.Api.Controllers
         [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> PatchAsync(long commentId, [FromBody] CourseCommentForUpdateDto dto)
         {
-            var result = await courseCommentService.UpdateAsync(commentId, dto);
-            return Ok(result);
+            // Fix: Get the single comment by its ID, not by course ID
+            var comment = await courseCommentService.GetCommentByIdAsync(commentId);
+            if (comment is null)
+                return NotFound("Comment not found");
+
+            var currentUserId = HttpContextHelper.UserId;
+            var currentUserRole = HttpContextHelper.UserRole;
+
+            if (comment.UserId != currentUserId && currentUserRole != "Admin")
+                return Forbid("You're not allowed to update this comment");
+
+            var updated = await courseCommentService.UpdateAsync(commentId, dto);
+            return Ok(updated);
         }
+
 
         // Only Admin can delete comments (customize this if needed)
         [HttpDelete("{commentId:long}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> DeleteAsync(long commentId)
         {
+            var comment = await courseCommentService.GetCommentByIdAsync(commentId);
+            if (comment is null)
+                return NotFound("Comment not found");
+
+            var currentUserId = HttpContextHelper.UserId;
+            var currentUserRole = HttpContextHelper.UserRole;
+
+            if (comment.UserId != currentUserId && currentUserRole != "Admin")
+                return Forbid("You're not allowed to delete this comment");
+
             var isDeleted = await courseCommentService.DeleteCommentAsync(commentId);
-            return Ok(new { Message = isDeleted ? "Deleted successfully" : "Deletion failed" });
+            return Ok(new { Message = isDeleted ? "Deleted successfully" : "Failed to delete" });
         }
+
     }
 }

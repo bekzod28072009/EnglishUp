@@ -9,4 +9,6 @@ public interface ICourseCommentService
     Task<CourseCommentForViewDto> UpdateAsync(long commentId, CourseCommentForUpdateDto dto);
     Task<bool> DeleteCommentAsync(long commentId);
 
+    // Fix for CS1061: Add missing method signature
+    Task<CourseCommentForViewDto> GetCommentByIdAsync(long commentId);
 }
