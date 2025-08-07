@@ -53,4 +53,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Auditable
         await dbContext.SaveChangesAsync();
         return true;
     }
+    public async ValueTask<bool> DeleteAsync(long id)
+    {
+        var entity = await dbSet.FindAsync(id);
+        if (entity == null)
+            return false;
+
+        dbSet.Remove(entity);
+        await dbContext.SaveChangesAsync();
+        return true;
+    }
 }

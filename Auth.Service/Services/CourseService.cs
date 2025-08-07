@@ -95,15 +95,17 @@ public class CourseService : ICourseService
         return result;
     }
 
-    public async Task<bool> DeleteAsync(Expression<Func<Course, bool>> filter)
+    public async Task<bool> DeleteAsync(long id)
     {
-        var course = await courseRepository.GetAsync(filter)
+        var course = await courseRepository.GetAsync(c => c.Id == id)
             ?? throw new HttpStatusCodeException(404, "Course not found");
 
         var isDeleted = await courseRepository.DeleteAsync(course);
+
         if (isDeleted)
             await courseRepository.SaveChangesAsync();
 
         return isDeleted;
     }
+
 }
