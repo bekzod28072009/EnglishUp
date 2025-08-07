@@ -63,10 +63,8 @@ public static class ServiceExtension
                 IssuerSigningKey = new SymmetricSecurityKey(Key)
             };
         });
-
+        services.AddAuthorization();
         services.AddControllers();
-
-
     }
 
     public static void AddSwaggerService(this IServiceCollection services)

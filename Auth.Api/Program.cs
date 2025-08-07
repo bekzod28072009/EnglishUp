@@ -1,6 +1,7 @@
 using Auth.Api.Configurations;
 using Auth.Api.Extensions;
 using Auth.DataAccess.AppDbContexts;
+using Auth.Service.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,12 +28,20 @@ builder.Services.AddJwtService(builder.Configuration);
 builder.Services.AddSwaggerService();
 
 
+builder.Services.AddHttpContextAccessor();
+
+// Set it directly
+HttpContextHelper.Accessor = builder.Services.BuildServiceProvider().GetService<IHttpContextAccessor>();
+
+
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi  
-//builder.Services.AddOpenApi();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -47,6 +56,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

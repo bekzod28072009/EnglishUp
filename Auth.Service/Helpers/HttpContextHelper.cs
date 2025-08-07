@@ -10,7 +10,7 @@ public class HttpContextHelper
     public static HttpContext HttpContext => Accessor?.HttpContext;
     public static IHeaderDictionary ResponseHeaders => HttpContext?.Response?.Headers;
     public static long? UserId => GetUserId();
-    public static string UserRole => GetUserRoul();
+    public static string UserRole => GetUserRole();
     public static List<string> UserPermission => GetUserPermission();
 
     private static long? GetUserId()
@@ -21,7 +21,7 @@ public class HttpContextHelper
         return canParse ? id : null;
     }
 
-    private static string GetUserRoul()
+    private static string GetUserRole()
     {
         string value = HttpContext?.User?.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Role)?.Value;
         return value;
