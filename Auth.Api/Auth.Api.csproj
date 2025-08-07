@@ -22,8 +22,4 @@
     <ProjectReference Include="..\Auth.Service\Auth.Service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

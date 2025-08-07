@@ -91,7 +91,7 @@ public class UserService : IUserService
         user.PasswordHash = SecurePasswordHasher.Hash(entity.Password);
         user.Role = roleRes;
 
-        _repository.CreateAsync(user);
+        await _repository.CreateAsync(user);
         await _repository.SaveChangesAsync();
 
         return _mapper.Map<UserForViewDto>(user);
@@ -112,22 +112,56 @@ public class UserService : IUserService
 
     public async Task<UserForViewDto> UpdateAsync(long id, UserForUpdateDto dto)
     {
-        var res = await _repository.GetAsync(item => item.Id == id);
-
-        if (res == null)
+        var user = await _repository.GetAsync(u => u.Id == id);
+        if (user == null)
             throw new HttpStatusCodeException(404, "User not found");
 
-        res = _mapper.Map(dto, res);
-        res.UpdatedAt = DateTime.UtcNow;
+        // Update FullName
+        if (!string.IsNullOrWhiteSpace(dto.FullName))
+            user.FullName = dto.FullName;
 
-        res.UpdatedBy = HttpContextHelper.UserId;
+        // Update Email
+        if (!string.IsNullOrWhiteSpace(dto.Email))
+        {
+            var exists = await _repository.GetAsync(u => u.Email == dto.Email && u.Id != id);
+            if (exists != null)
+                throw new HttpStatusCodeException(400, "Email already in use by another user.");
 
+            user.Email = dto.Email;
+        }
 
-        _repository.Update(res);
+        // Update PhoneNumber
+        if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+        {
+            if (!dto.PhoneNumber.All(char.IsDigit))
+                throw new HttpStatusCodeException(400, "Phone number must contain only digits.");
 
+            user.PhoneNumber = int.Parse(dto.PhoneNumber);
+        }
+
+        // Update Password (if all fields are filled)
+        if (!string.IsNullOrWhiteSpace(dto.OldPassword) &&
+            !string.IsNullOrWhiteSpace(dto.NewPassword) &&
+            !string.IsNullOrWhiteSpace(dto.ConfirmPassword))
+        {
+            if (!SecurePasswordHasher.Verify(dto.OldPassword, user.PasswordHash))
+                throw new HttpStatusCodeException(400, "Old password is incorrect.");
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+                throw new HttpStatusCodeException(400, "Passwords do not match.");
+
+            user.PasswordHash = SecurePasswordHasher.Hash(dto.NewPassword);
+        }
+
+        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedBy = HttpContextHelper.UserId;
+
+        _repository.Update(user);
         await _repository.SaveChangesAsync();
-        return _mapper.Map<UserForViewDto>(res);
+
+        return _mapper.Map<UserForViewDto>(user);
     }
+
 
     public async Task<bool> ChangePassword(string email, string password)
     {
