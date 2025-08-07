@@ -11,10 +11,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Auditable
     private readonly AppDbContext dbContext;
     private readonly DbSet<T> dbSet;
 
-    public GenericRepository(AppDbContext dbContext, DbSet<T> dbSet)
+    public GenericRepository(AppDbContext dbContext)
     {
         this.dbContext = dbContext;
-        this.dbSet = dbSet;
+        dbSet = dbContext.Set<T>();
     }
 
     public async ValueTask<T> CreateAsync(T entity) =>
