@@ -2,6 +2,8 @@ using Auth.Api.Configurations;
 using Auth.Api.Extensions;
 using Auth.DataAccess.AppDbContexts;
 using Auth.Service.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,7 +38,13 @@ HttpContextHelper.Accessor = builder.Services.BuildServiceProvider().GetService<
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
