@@ -63,4 +63,14 @@ public class CourseCommentService : ICourseCommentService
         return true;
     }
 
+    public async Task<CourseCommentForViewDto> GetCommentByIdAsync(long commentId)
+    {
+        var comment = await repository.GetAsync(c => c.Id == commentId, new[] { "User" });
+
+        if (comment is null)
+            throw new HttpStatusCodeException(404, "Comment not found");
+
+        return mapper.Map<CourseCommentForViewDto>(comment);
+    }
+
 }
