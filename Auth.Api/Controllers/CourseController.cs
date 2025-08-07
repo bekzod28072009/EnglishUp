@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Auth.Service.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers
 {
     public class CourseController : Controller
     {
-        public IActionResult Index()
+        private readonly ICourseService _courseService;
+
+        public CourseController(ICourseService courseService)
         {
-            return View();
+            _courseService = courseService;
         }
+
+
     }
 }

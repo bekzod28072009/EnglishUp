@@ -43,148 +43,159 @@ public class AuthService : IAuthService
 
     public async ValueTask<TokenDto> GenerateToken(string Username, string password)
     {
-        var user = await userRepository.GetAsync(p => p.Email == Username)
-                   ?? throw new HttpStatusCodeException(400, "Login or Password is incorrect");
-
-        var res = await roleRepository.GetAsync(p => p.Id == user.RoleId, includes: ["RolePermissions"]);
-
-
-        var res1 = new List<string>();
-        foreach (var role in res.RolePermission)
-        {
-            res1.Add(role.Name);
-        }
-
-        var jsonPermissin = JsonSerializer.Serialize(res1);
+        var user = await userRepository.GetAsync(u => u.Email == Username)
+        ?? throw new HttpStatusCodeException(400, "Login or Password is incorrect");
 
         if (!SecurePasswordHasher.Verify(password, user.PasswordHash))
             throw new HttpStatusCodeException(400, "Login or Password is incorrect");
 
+        var role = await roleRepository.GetAsync(r => r.Id == user.RoleId, includes: ["RolePermission"])
+            ?? throw new HttpStatusCodeException(404, "User role not found");
 
-        if (user is null)
-            throw new HttpStatusCodeException(400, "Login or Password is incorrect");
+        var permissionNames = role.RolePermission.Select(p => p.Name).ToList();
+        var jsonPermissions = JsonSerializer.Serialize(permissionNames);
 
-        var authSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
+        var accessExpireDays = int.Parse(configuration["JWT:Expire"]);
+        var resetExpireDays = int.Parse(configuration["JWT:ResExpire"]);
 
-        Token token1 = new Token()
+        var tokenEntity = new Token
         {
             UserId = user.Id,
             Key = Guid.NewGuid()
         };
 
-        var token = new JwtSecurityToken(
-             issuer: configuration["JWT:ValidIssuer"],
-             expires: DateTime.Now.AddDays(int.Parse(configuration["JWT:Expire"])),
-             claims: new List<Claim>
-             {
-                    new Claim("Permissions", jsonPermissin),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, res.Name.ToString())
-             },
-             signingCredentials: new SigningCredentials(
-             key: authSigningKey,
-             algorithm: SecurityAlgorithms.HmacSha256)
+        // 🔐 Access Token
+        var accessToken = new JwtSecurityToken(
+            issuer: configuration["JWT:ValidIssuer"],
+            expires: DateTime.UtcNow.AddDays(accessExpireDays),
+            claims: new List<Claim>
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, role.Name),
+            new Claim("Permissions", jsonPermissions),
+            new Claim(JwtRegisteredClaimNames.Jti, tokenEntity.Key.ToString())
+            },
+            signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );
 
-        var resToken = new JwtSecurityToken(
-             issuer: configuration["JWT:ValidIssuer"],
-             expires: DateTime.Now.AddDays(int.Parse(configuration["JWT:ResExpire"])),
-              claims: new List<Claim>
-             {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Jti, token1.Key.ToString()),
-             },
-             signingCredentials: new SigningCredentials(
-             key: authSigningKey,
-             algorithm: SecurityAlgorithms.HmacSha256)
+        // 🔁 Refresh Token
+        var refreshToken = new JwtSecurityToken(
+            issuer: configuration["JWT:ValidIssuer"],
+            expires: DateTime.UtcNow.AddDays(resetExpireDays),
+            claims: new List<Claim>
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, tokenEntity.Key.ToString())
+            },
+            signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );
 
+        // Store tokens in DB
+        tokenEntity.AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken);
+        tokenEntity.ResetToken = new JwtSecurityTokenHandler().WriteToken(refreshToken);
 
-        token1.AccessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        token1.ResetToken = new JwtSecurityTokenHandler().WriteToken(resToken);
-
-        if (await tokenRepository.GetAsync(p => p.UserId == user.Id) == null)
+        var existingToken = await tokenRepository.GetAsync(t => t.UserId == user.Id);
+        if (existingToken is null)
         {
-            await tokenRepository.CreateAsync(token1);
-            await tokenRepository.SaveChangesAsync();
+            await tokenRepository.CreateAsync(tokenEntity);
         }
         else
         {
-            var getToken = await tokenRepository.GetAsync(p => p.UserId == user.Id);
+            existingToken.AccessToken = tokenEntity.AccessToken;
+            existingToken.ResetToken = tokenEntity.ResetToken;
+            existingToken.Key = tokenEntity.Key;
+            existingToken.CreatedAt = DateTime.UtcNow.AddHours(5);
 
-            getToken.AccessToken = token1.AccessToken;
-            getToken.ResetToken = token1.ResetToken;
-            getToken.Key = token1.Key;
-            getToken.CreatedAt = DateTime.UtcNow.AddHours(5);
-
-            tokenRepository.Update(getToken);
-            await tokenRepository.SaveChangesAsync();
+            tokenRepository.Update(existingToken);
         }
 
-        return mapper.Map<TokenDto>(token1);
+        await tokenRepository.SaveChangesAsync();
+
+        return mapper.Map<TokenDto>(tokenEntity);
     }
 
-    public async ValueTask<string> RestartToken(string token)
+    //------------------------------------------------------------
+
+    public async ValueTask<string> RestartToken(string refreshToken)
     {
-        bool resToken = IsTokenExpired(token);
-        if (!resToken)
+        // Step 1: Validate the refresh token signature
+        var tokenHandler = new JwtSecurityTokenHandler();
+        ClaimsPrincipal principal;
+        SecurityToken validatedToken;
+
+        try
         {
-            var getToken = await tokenRepository.GetAsync(p => p.ResetToken == token);
-
-            if (getToken == null)
+            principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
             {
-                throw new HttpStatusCodeException(400, "Token not found");
-            }
-
-            var user = await userRepository.GetAsync(p => p.Id == getToken.UserId)
-                   ?? throw new HttpStatusCodeException(400, "User not found");
-
-            var res = await roleRepository.GetAsync(p => p.Id == user.RoleId, includes: ["RolePermissions"])
-                       ?? throw new HttpStatusCodeException(400, "Role note fount");
-
-            var res1 = new List<string>();
-            foreach (var role in res.RolePermission)
-            {
-                res1.Add(role.Name);
-            }
-
-            var jsonPermissin = JsonSerializer.Serialize(res1);
-
-
-            var authSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
-
-            var newToken = new JwtSecurityToken(
-                 issuer: configuration["JWT:ValidIssuer"],
-                 expires: DateTime.Now.AddDays(int.Parse(configuration["JWT:Expire"])),
-                 claims: new List<Claim>
-                 {
-                    new Claim("Permissions", jsonPermissin),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, res.Name.ToString())
-                 },
-                 signingCredentials: new SigningCredentials(
-                 key: authSigningKey,
-                 algorithm: SecurityAlgorithms.HmacSha256)
-            );
-
-
-
-            getToken.AccessToken = new JwtSecurityTokenHandler().WriteToken(newToken);
-            getToken.CreatedAt = DateTime.UtcNow.AddHours(5);
-
-            tokenRepository.Update(getToken);
-            await tokenRepository.SaveChangesAsync();
-
-            return new JwtSecurityTokenHandler().WriteToken(newToken);
-
+                ValidateIssuer = true,
+                ValidIssuer = configuration["JWT:ValidIssuer"],
+                ValidateAudience = false,
+                ValidateLifetime = false, // We validate manually
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
+            }, out validatedToken);
+        }
+        catch
+        {
+            throw new HttpStatusCodeException(401, "Invalid refresh token");
         }
 
-        throw new HttpStatusCodeException(400, "Token is expired");
+        // Step 2: Extract claims
+        var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
+        var jtiClaim = principal.FindFirst(JwtRegisteredClaimNames.Jti);
+
+        if (userIdClaim is null || jtiClaim is null)
+            throw new HttpStatusCodeException(401, "Invalid token claims");
+
+        Guid userId = Guid.Parse(userIdClaim.Value);
+        Guid tokenKey = Guid.Parse(jtiClaim.Value);
+
+        // Fix for CS0019: Convert userId (Guid) to long before comparison
+        // Replace this line:
+        //var getToken = await tokenRepository.GetAsync(t => t.UserId == userId && t.ResetToken == refreshToken && t.Key == tokenKey);
+        // With this:
+        var getToken = await tokenRepository.GetAsync(t => t.UserId == long.Parse(userId.ToString()) && t.ResetToken == refreshToken && t.Key == tokenKey);
+
+        // Step 4: Get user and permissions
+        var user = await userRepository.GetAsync(p => p.Id == getToken.UserId)
+            ?? throw new HttpStatusCodeException(404, "User not found");
+
+        var role = await roleRepository.GetAsync(r => r.Id == user.RoleId, includes: ["RolePermission"])
+            ?? throw new HttpStatusCodeException(404, "Role not found");
+
+        var permissionNames = role.RolePermission.Select(p => p.Name).ToList();
+        var jsonPermissions = JsonSerializer.Serialize(permissionNames);
+
+        // Step 5: Generate new access token
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
+        var expireDays = int.Parse(configuration["JWT:Expire"]);
+
+        var newAccessToken = new JwtSecurityToken(
+            issuer: configuration["JWT:ValidIssuer"],
+            expires: DateTime.UtcNow.AddDays(expireDays),
+            claims: new List<Claim>
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, role.Name),
+            new Claim("Permissions", jsonPermissions),
+            new Claim(JwtRegisteredClaimNames.Jti, getToken.Key.ToString()) // use same Key
+            },
+            signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+        );
+
+        string writtenAccessToken = tokenHandler.WriteToken(newAccessToken);
+
+        // Step 6: Update access token and return
+        getToken.AccessToken = writtenAccessToken;
+        getToken.CreatedAt = DateTime.UtcNow.AddHours(5);
+
+        tokenRepository.Update(getToken);
+        await tokenRepository.SaveChangesAsync();
+
+        return writtenAccessToken;
     }
+
 
     private bool IsTokenExpired(string token)
     {
