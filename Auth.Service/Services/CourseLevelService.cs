@@ -33,9 +33,9 @@ public class CourseLevelService : ICourseLevelService
         return mapper.Map<CourseLevelForViewDto>(level);
     }
 
-    public async Task<bool> DeleteAsync(Expression<Func<CourseLevel, bool>> filter)
+    public async Task<bool> DeleteAsync(long id)
     {
-        var level = await courseLevelRepository.GetAsync(filter)
+        var level = await courseLevelRepository.GetAsync(c => c.Id == id)
             ?? throw new HttpStatusCodeException(404, "Course level not found");
 
         await courseLevelRepository.DeleteAsync(level);
@@ -44,9 +44,9 @@ public class CourseLevelService : ICourseLevelService
         return true;
     }
 
-    public async Task<CourseLevelForViewDto> GetAsync(Expression<Func<CourseLevel, bool>> filter, string[] includes = null)
+    public async Task<CourseLevelForViewDto> GetAsync(long id)
     {
-        var level = await courseLevelRepository.GetAsync(filter, includes)
+        var level = await courseLevelRepository.GetAsync(c => c.Id == id)
             ?? throw new HttpStatusCodeException(404, "Course level not found");
 
         return mapper.Map<CourseLevelForViewDto>(level);
@@ -61,9 +61,10 @@ public class CourseLevelService : ICourseLevelService
     public async Task<CourseLevelForViewDto> UpdateAsync(long id, CourseLevelForUpdateDto dto)
     {
         var level = await courseLevelRepository.GetAsync(l => l.Id == id)
-            ?? throw new HttpStatusCodeException(404, "Course level not found");
+        ?? throw new HttpStatusCodeException(404, "Course level not found");
 
-        level.Name = dto.Name;
+        if (!string.IsNullOrWhiteSpace(dto.Name))
+            level.Name = dto.Name;
 
         courseLevelRepository.Update(level);
         await courseLevelRepository.SaveChangesAsync();
