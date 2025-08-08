@@ -8,8 +8,8 @@ namespace Auth.Service.Interfaces;
 public interface ILessonService
 {
     Task<IEnumerable<LessonForViewDto>> GetAllAsync(Expression<Func<Lesson, bool>> filter = null, string[] includes = null);
-    Task<LessonForViewDto> GetAsync(Expression<Func<Lesson, bool>> filter, string[] includes = null);
+    Task<LessonForViewDto> GetAsync(long id);
     Task<LessonForViewDto> CreateAsync(LessonForCreationDto dto);
-    Task<bool> DeleteAsync(Expression<Func<Lesson, bool>> filter);
+    Task<bool> DeleteAsync(long id);
     Task<LessonForViewDto> UpdateAsync(long id, LessonForUpdateDto dto);
 }

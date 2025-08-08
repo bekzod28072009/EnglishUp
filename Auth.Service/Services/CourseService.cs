@@ -41,11 +41,9 @@ public class CourseService : ICourseService
         return courseViews;
     }
 
-    public async Task<CourseForViewDto> GetAsync(
-        Expression<Func<Course, bool>> filter,
-        string[] includes = null)
+    public async Task<CourseForViewDto> GetAsync(long id)
     {
-        var course = await courseRepository.GetAsync(filter, includes)
+        var course = await courseRepository.GetAsync(c => c.Id == id)
             ?? throw new HttpStatusCodeException(404, "Course not found");
 
         var dto = mapper.Map<CourseForViewDto>(course);
@@ -97,15 +95,13 @@ public class CourseService : ICourseService
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var course = await courseRepository.GetAsync(c => c.Id == id)
+        var level = await courseRepository.GetAsync(c => c.Id == id)
             ?? throw new HttpStatusCodeException(404, "Course not found");
 
-        var isDeleted = await courseRepository.DeleteAsync(course);
+        await courseRepository.DeleteAsync(level);
+        await courseRepository.SaveChangesAsync();
 
-        if (isDeleted)
-            await courseRepository.SaveChangesAsync();
-
-        return isDeleted;
+        return true;
     }
 
 }

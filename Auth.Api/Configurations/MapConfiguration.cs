@@ -50,7 +50,9 @@ public class MapConfiguration : Profile
 
         // Lesson
         CreateMap<LessonForCreationDto, Lesson>().ReverseMap();
-        CreateMap<LessonForUpdateDto, Lesson>().ReverseMap();
+        CreateMap<LessonForUpdateDto, Lesson>()
+            .ForAllMembers(opts =>
+                opts.Condition((src, dest, srcMember) => srcMember != null));
         CreateMap<LessonForViewDto, Lesson>()
             .ForMember(dest => dest.Course, opt => opt.MapFrom(src =>
                 !string.IsNullOrEmpty(src.CourseTitle) ? new Course { Title = src.CourseTitle } : null))
