@@ -29,7 +29,7 @@ namespace Auth.Api.Controllers
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var result = await courseService.GetAsync(c => c.Id == id);
+            var result = await courseService.GetAsync(id);
             return Ok(result);
         }
 

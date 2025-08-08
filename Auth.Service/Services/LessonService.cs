@@ -1,6 +1,8 @@
 ﻿using Auth.DataAccess.Interface;
 using Auth.Domain.Entities.Courses;
+using Auth.Service.DTOs.Courses.CourseLevelsDto;
 using Auth.Service.DTOs.Courses.LessonsDto;
+using Auth.Service.Exceptions;
 using Auth.Service.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +28,12 @@ public class LessonService : ILessonService
         return mapper.Map<IEnumerable<LessonForViewDto>>(lessons);
     }
 
-    public async Task<LessonForViewDto> GetAsync(Expression<Func<Lesson, bool>> filter, string[] includes = null)
+    public async Task<LessonForViewDto> GetAsync(long id)
     {
-        var lesson = await repository.GetAsync(filter, includes);
-        return lesson is null
-            ? null
-            : mapper.Map<LessonForViewDto>(lesson);
+        var lesson = await repository.GetAsync(c => c.Id == id)
+            ?? throw new HttpStatusCodeException(404, "Course level not found");
+
+        return mapper.Map<LessonForViewDto>(lesson);
     }
 
     public async Task<LessonForViewDto> CreateAsync(LessonForCreationDto dto)
@@ -42,15 +44,14 @@ public class LessonService : ILessonService
         return mapper.Map<LessonForViewDto>(created);
     }
 
-    public async Task<bool> DeleteAsync(Expression<Func<Lesson, bool>> filter)
+    public async Task<bool> DeleteAsync(long id)
     {
-        var lesson = await repository.GetAsync(filter);
-        if (lesson is null)
-            return false;
+        var level = await repository.GetAsync(c => c.Id == id)
+            ?? throw new HttpStatusCodeException(404, "Lesson not found");
 
-
-        await repository.DeleteAsync(lesson);
+        await repository.DeleteAsync(level);
         await repository.SaveChangesAsync();
+
         return true;
     }
 
