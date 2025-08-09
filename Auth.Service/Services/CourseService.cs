@@ -72,18 +72,21 @@ public class CourseService : ICourseService
         var course = await courseRepository.GetAsync(c => c.Id == id)
         ?? throw new HttpStatusCodeException(404, "Course not found");
 
-        if (dto.LevelId.HasValue)
-        {
-            var level = await courseLevelRepository.GetAsync(l => l.Id == dto.LevelId.Value)
-                ?? throw new HttpStatusCodeException(404, "Course level not found");
-            course.LevelId = dto.LevelId.Value;
-        }
+        //if (dto.LevelId.HasValue)
+        //{
+        //    var level = await courseLevelRepository.GetAsync(l => l.Id == dto.LevelId.Value)
+        //        ?? throw new HttpStatusCodeException(404, "Course level not found");
+        //    course.LevelId = dto.LevelId.Value;
+        //}
 
-        if (!string.IsNullOrEmpty(dto.Title))
-            course.Title = dto.Title;
 
-        if (!string.IsNullOrEmpty(dto.Description))
-            course.Description = dto.Description;
+        //if (!string.IsNullOrEmpty(dto.Title))
+        //    course.Title = dto.Title;
+
+        //if (!string.IsNullOrEmpty(dto.Description))
+        //    course.Description = dto.Description;
+
+        course = mapper.Map(dto, course);    
 
         courseRepository.Update(course);
         await courseRepository.SaveChangesAsync();
