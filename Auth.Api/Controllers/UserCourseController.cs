@@ -72,5 +72,17 @@ namespace Auth.Api.Controllers
             var isDeleted = await userCourseService.DeleteAsync(id);
             return Ok(isDeleted);
         }
+
+        // POST: api/UserCourse/AddComment
+        [HttpPost("AddComment")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> AddCommentAsync([FromBody] CourseCommentForCreationDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await userCourseService.AddCommentAsync(dto);
+            return Ok(result);
+        }
     }
 }
