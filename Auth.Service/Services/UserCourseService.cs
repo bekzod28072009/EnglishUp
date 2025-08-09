@@ -54,34 +54,6 @@ public class UserCourseService : IUserCourseService
         if (entity is null)
             throw new HttpStatusCodeException(404, $"UserCourse with UserId {userId} and CourseId {courseId} not found");
 
-        //// Update Rating
-        //if (dto.Rating.HasValue)
-        //{
-        //    if (dto.Rating < 1 || dto.Rating > 5)
-        //        throw new ArgumentException("Rating must be between 1 and 5");
-        //    entity.Rating = dto.Rating.Value;
-        //}
-
-        //// Update IsCompleted and CompletedAt
-        //if (dto.IsCompleted.HasValue)
-        //{
-        //    entity.IsCompleted = dto.IsCompleted.Value;
-
-        //    // Automatically set CompletedAt if completed and no date provided
-        //    if (entity.IsCompleted && !dto.CompletedAt.HasValue)
-        //        entity.CompletedAt = DateTime.UtcNow;
-        //    else if (!entity.IsCompleted)
-        //        entity.CompletedAt = null;
-        //}
-
-        //// If CompletedAt explicitly provided
-        //if (dto.CompletedAt.HasValue)
-        //{
-        //    if (!entity.IsCompleted)
-        //        throw new InvalidOperationException("Cannot set CompletedAt if IsCompleted is false");
-        //    entity.CompletedAt = dto.CompletedAt.Value;
-        //}
-
         entity = mapper.Map(dto, entity);
 
         entity.UpdatedAt = DateTime.UtcNow;

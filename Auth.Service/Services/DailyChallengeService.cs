@@ -63,21 +63,21 @@ public class DailyChallengeService : IDaliyChallengeService
 
     public async Task<DailyChallengeForViewDto> UpdateAsync(long id, DailyChallengeForUpdateDto dto)
     {
-        var entity = await challengeRepository.GetAsync(x => x.Id == id)
-                 ?? throw new HttpStatusCodeException(404, "Daily challenge not found");
+        var challenge = await challengeRepository.GetAsync(c => c.Id == id);
 
-        if (!string.IsNullOrWhiteSpace(dto.Description))
-            entity.Description = dto.Description;
+        if (challenge is null)
+            throw new HttpStatusCodeException(404, $"DailyChallenge with Id {id} not found");
 
-        if (dto.Date.HasValue)
-            entity.AvailableDate = dto.Date.Value;
+        // Map only non-null fields from dto
+        challenge = mapper.Map(dto, challenge);
 
-        entity.UpdatedAt = DateTime.UtcNow;
-
+        challenge.UpdatedAt = DateTime.UtcNow;
+        challengeRepository.Update(challenge);
         await challengeRepository.SaveChangesAsync();
 
-        return mapper.Map<DailyChallengeForViewDto>(entity);
+        return mapper.Map<DailyChallengeForViewDto>(challenge);
     }
+
 
     public async Task<DailyChallengeForViewDto?> GetTodayChallengeAsync()
     {

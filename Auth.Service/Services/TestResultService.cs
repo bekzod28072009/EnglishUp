@@ -34,12 +34,12 @@ public class TestResultService : ITestResultService
         var testResult = await _repository.GetAsync(t => t.Id == id)
             ?? throw new HttpStatusCodeException(404, $"TestResult with ID {id} not found");
 
-        _mapper.Map(dto, testResult);
+        testResult = _mapper.Map(dto, testResult);
 
-        var updated = _repository.Update(testResult);
+        _repository.Update(testResult);
         await _repository.SaveChangesAsync();
 
-        return _mapper.Map<ResultForViewDto>(updated);
+        return _mapper.Map<ResultForViewDto>(testResult);
     }
 
     public async Task<bool> DeleteAsync(Expression<Func<TestResult, bool>> filter)

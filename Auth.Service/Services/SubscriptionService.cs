@@ -53,7 +53,7 @@ public class SubscriptionService : ISubscriptionService
         if (subscription is null)
             throw new HttpStatusCodeException(404, "Subscription not found");
 
-        mapper.Map(dto, subscription);
+        subscription = mapper.Map(dto, subscription);
         repository.Update(subscription);
         await repository.SaveChangesAsync();
 

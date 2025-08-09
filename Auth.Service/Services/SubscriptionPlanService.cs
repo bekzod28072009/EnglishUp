@@ -34,7 +34,9 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         var plan = await repository.GetAsync(p => p.Id == id)
             ?? throw new HttpStatusCodeException(404, "Subscription plan not found");
 
-        mapper.Map(dto, plan);
+        plan = mapper.Map(dto, plan);
+
+        repository.Update(plan);
         await repository.SaveChangesAsync();
         return mapper.Map<SubscriptionPlanForViewDto>(plan);
     }

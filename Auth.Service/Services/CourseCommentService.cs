@@ -42,9 +42,7 @@ public class CourseCommentService : ICourseCommentService
         var comment = await repository.GetAsync(c => c.Id == commentId)
         ?? throw new HttpStatusCodeException(404, "Comment not found");
 
-        comment.Content = dto.Content;
-        comment.Rating = dto.Rating;
-        comment.UpdatedAt = DateTime.UtcNow;
+        comment = mapper.Map(dto, comment);
 
         repository.Update(comment);
         await repository.SaveChangesAsync();

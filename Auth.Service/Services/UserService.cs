@@ -116,42 +116,7 @@ public class UserService : IUserService
         if (user == null)
             throw new HttpStatusCodeException(404, "User not found");
 
-        // Update FullName
-        if (!string.IsNullOrWhiteSpace(dto.FullName))
-            user.FullName = dto.FullName;
-
-        // Update Email
-        if (!string.IsNullOrWhiteSpace(dto.Email))
-        {
-            var exists = await _repository.GetAsync(u => u.Email == dto.Email && u.Id != id);
-            if (exists != null)
-                throw new HttpStatusCodeException(400, "Email already in use by another user.");
-
-            user.Email = dto.Email;
-        }
-
-        // Update PhoneNumber
-        if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
-        {
-            if (!dto.PhoneNumber.All(char.IsDigit))
-                throw new HttpStatusCodeException(400, "Phone number must contain only digits.");
-
-            user.PhoneNumber = int.Parse(dto.PhoneNumber);
-        }
-
-        // Update Password (if all fields are filled)
-        if (!string.IsNullOrWhiteSpace(dto.OldPassword) &&
-            !string.IsNullOrWhiteSpace(dto.NewPassword) &&
-            !string.IsNullOrWhiteSpace(dto.ConfirmPassword))
-        {
-            if (!SecurePasswordHasher.Verify(dto.OldPassword, user.PasswordHash))
-                throw new HttpStatusCodeException(400, "Old password is incorrect.");
-
-            if (dto.NewPassword != dto.ConfirmPassword)
-                throw new HttpStatusCodeException(400, "Passwords do not match.");
-
-            user.PasswordHash = SecurePasswordHasher.Hash(dto.NewPassword);
-        }
+        user = _mapper.Map(dto, user);
 
         user.UpdatedAt = DateTime.UtcNow;
         user.UpdatedBy = HttpContextHelper.UserId;

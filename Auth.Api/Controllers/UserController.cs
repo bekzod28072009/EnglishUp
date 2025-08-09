@@ -36,6 +36,7 @@ namespace Auth.Api.Controllers
         public async ValueTask<IActionResult> CreateAsync([FromBody] UserForCreationDto dto)
             => Ok(await _userService.CreateAsync(dto));
 
+        [Authorize(Roles ="User,Admin")]
         [HttpPatch("{id:long}")]
         public async ValueTask<IActionResult> UpdateAsync(long id, [FromBody] UserForUpdateDto dto)
         {

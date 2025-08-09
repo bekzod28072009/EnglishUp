@@ -50,7 +50,8 @@ public class MockTestService : IMockTestService
         if (mockTest is null)
             throw new HttpStatusCodeException(404, "MockTest not found");
 
-        mapper.Map(dto, mockTest);
+        mockTest = mapper.Map(dto, mockTest);
+
         repository.Update(mockTest);
         await repository.SaveChangesAsync();
 

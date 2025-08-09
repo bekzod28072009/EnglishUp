@@ -2,6 +2,7 @@
 using Auth.Domain.Entities.Courses;
 using Auth.Domain.Entities.Homeworks;
 using Auth.Service.DTOs.Homeworks.HomeworksDto;
+using Auth.Service.Exceptions;
 using Auth.Service.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -55,9 +56,9 @@ public class HomeworkService : IHomeworkService
     {
         var homework = await repository.GetAsync(h => h.Id == id);
         if (homework is null)
-            return null;
+            throw new HttpStatusCodeException(404, $"DailyChallenge with Id {id} not found");
 
-        mapper.Map(dto, homework);
+        homework = mapper.Map(dto, homework);
         repository.Update(homework);
         await repository.SaveChangesAsync();
         return mapper.Map<HomeworkForViewDto>(homework);
