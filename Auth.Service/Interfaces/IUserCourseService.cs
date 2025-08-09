@@ -9,11 +9,11 @@ namespace Auth.Service.Interfaces;
 public interface IUserCourseService
 {
     Task<IEnumerable<UserCourseForViewDto>> GetAllAsync(Expression<Func<UserCourse, bool>> filter = null, string[] includes = null);
-    Task<UserCourseForViewDto> GetAsync(Expression<Func<UserCourse, bool>> filter, string[] includes = null);
+    Task<UserCourseForViewDto> GetAsync(long id);
 
     Task<UserCourseForViewDto> CreateAsync(UserCourseForCreationDto dto);
-    Task<UserCourseForViewDto> UpdateAsync(long id, UserCourseForUpdateDto dto);
-    Task<bool> DeleteAsync(Expression<Func<UserCourse, bool>> filter);
+    ValueTask<UserCourse> UpdateAsync(long id, long courseId, UserCourseForUpdateDto dto);
+    Task<bool> DeleteAsync(long id);
 
     Task<bool> AddCommentAsync(CourseCommentForCreationDto dto);
 }
