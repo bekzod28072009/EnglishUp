@@ -60,12 +60,6 @@ public class MapConfiguration : Profile
             .ForMember(dest => dest.CourseTitle, opt => opt.MapFrom(src =>
                 src.Course != null ? src.Course.Title : string.Empty));
 
-
-        // LessonPart
-        CreateMap<LessonPart, LessonPartForViewDto>().ReverseMap();
-        CreateMap<LessonPart, LessonPartForCreationDto>().ReverseMap();
-        CreateMap<LessonPart, LessonPartForUpdateDto>().ReverseMap();
-
         // UserCourse
         CreateMap<UserCourseForCreationDto, UserCourse>().ReverseMap();
         CreateMap<UserCourseForUpdateDto, UserCourse>().ReverseMap();
