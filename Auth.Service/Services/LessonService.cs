@@ -61,7 +61,8 @@ public class LessonService : ILessonService
         if (existing is null)
             return null;
 
-        mapper.Map(dto, existing);
+        existing = mapper.Map(dto, existing);
+
         var updated = repository.Update(existing);
         await repository.SaveChangesAsync();
         return mapper.Map<LessonForViewDto>(updated);

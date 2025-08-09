@@ -98,7 +98,8 @@ public class PermissionService : IPermissionService
         if (permission == null)
             throw new HttpStatusCodeException(404, "Permission not found");
 
-        _mapper.Map(dto, permission);
+        permission = _mapper.Map(dto, permission);
+
         _repository.Update(permission);
         await _repository.SaveChangesAsync();
 

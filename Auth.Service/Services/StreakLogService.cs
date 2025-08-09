@@ -50,7 +50,9 @@ public class StreakLogService : IStreakLogService
         if (existing is null)
             throw new HttpStatusCodeException(404, "Streak log not found");
 
-        mapper.Map(dto, existing);
+        existing = mapper.Map(dto, existing);
+
+        repository.Update(existing);
         await repository.SaveChangesAsync();
 
         return mapper.Map<StreakLogForViewDto>(existing);

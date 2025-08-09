@@ -37,7 +37,9 @@ public class StreakService : IStreakService
         var entity = await repository.GetAsync(s => s.Id == id);
         if (entity is null) return null;
 
-        mapper.Map(dto, entity);
+        entity = mapper.Map(dto, entity);
+
+        repository.Update(entity);
         await repository.SaveChangesAsync();
 
         return mapper.Map<StreakForViewDto>(entity);

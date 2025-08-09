@@ -63,8 +63,7 @@ public class CourseLevelService : ICourseLevelService
         var level = await courseLevelRepository.GetAsync(l => l.Id == id)
         ?? throw new HttpStatusCodeException(404, "Course level not found");
 
-        if (!string.IsNullOrWhiteSpace(dto.Name))
-            level.Name = dto.Name;
+        level = mapper.Map(dto, level);
 
         courseLevelRepository.Update(level);
         await courseLevelRepository.SaveChangesAsync();
