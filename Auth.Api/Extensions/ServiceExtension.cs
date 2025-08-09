@@ -22,7 +22,6 @@ public static class ServiceExtension
         services.AddTransient<ICourseLevelService, CourseLevelService>();
         services.AddTransient<IDaliyChallengeService, DailyChallengeService>();
         services.AddTransient<IHomeworkService, HomeworkService>();
-        services.AddTransient<ILessonPartService, LessonPartService>();
         services.AddTransient<ILessonService, LessonService>();
         services.AddTransient<IMockTestService, MockTestService>();
         services.AddTransient<IPermissionService, PermissionService>();
