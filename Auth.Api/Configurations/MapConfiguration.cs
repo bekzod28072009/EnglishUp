@@ -9,7 +9,6 @@ using Auth.Domain.Entities.UserManagement;
 using Auth.Service.DTOs.Courses.CourseCommentsDto;
 using Auth.Service.DTOs.Courses.CourseLevelsDto;
 using Auth.Service.DTOs.Courses.CoursesDto;
-using Auth.Service.DTOs.Courses.LessonPartsDto;
 using Auth.Service.DTOs.Courses.LessonsDto;
 using Auth.Service.DTOs.Courses.UserCoursesDto;
 using Auth.Service.DTOs.Gamification.DailyChallengesDto;

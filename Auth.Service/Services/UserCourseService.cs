@@ -31,9 +31,9 @@ public class UserCourseService : IUserCourseService
         return userCourses.Select(mapper.Map<UserCourseForViewDto>);
     }
 
-    public async Task<UserCourseForViewDto> GetAsync(Expression<Func<UserCourse, bool>> filter, string[] includes = null)
+    public async Task<UserCourseForViewDto> GetAsync(long id)
     {
-        var userCourse = await repository.GetAsync(filter, includes);
+        var userCourse = await repository.GetAsync(c => c.Id == id);
         return mapper.Map<UserCourseForViewDto>(userCourse);
     }
 
@@ -45,31 +45,59 @@ public class UserCourseService : IUserCourseService
         return mapper.Map<UserCourseForViewDto>(created);
     }
 
-    public async Task<UserCourseForViewDto> UpdateAsync(long id, UserCourseForUpdateDto dto)
+    public async ValueTask<UserCourse> UpdateAsync(long userId, long courseId, UserCourseForUpdateDto dto)
     {
-        var userCourse = await repository.GetAsync(x => x.Id == id);
-        if (userCourse is null)
-            throw new Exception("UserCourse not found");
+        var entity = await repository.GetAsync(
+            uc => uc.UserId == userId && uc.CourseId == courseId
+        );
 
-        userCourse.UserId = dto.UserId;
-        userCourse.CourseId = dto.CourseId;
-        userCourse.UpdatedAt = DateTime.UtcNow;
+        if (entity is null)
+            throw new HttpStatusCodeException(404, $"UserCourse with UserId {userId} and CourseId {courseId} not found");
 
-        var updated = repository.Update(userCourse);
-        await repository.SaveChangesAsync(); // Ensure changes are saved asynchronously
-        return mapper.Map<UserCourseForViewDto>(updated);
+        // Update Rating
+        if (dto.Rating.HasValue)
+        {
+            if (dto.Rating < 1 || dto.Rating > 5)
+                throw new ArgumentException("Rating must be between 1 and 5");
+            entity.Rating = dto.Rating.Value;
+        }
+
+        // Update IsCompleted and CompletedAt
+        if (dto.IsCompleted.HasValue)
+        {
+            entity.IsCompleted = dto.IsCompleted.Value;
+
+            // Automatically set CompletedAt if completed and no date provided
+            if (entity.IsCompleted && !dto.CompletedAt.HasValue)
+                entity.CompletedAt = DateTime.UtcNow;
+            else if (!entity.IsCompleted)
+                entity.CompletedAt = null;
+        }
+
+        // If CompletedAt explicitly provided
+        if (dto.CompletedAt.HasValue)
+        {
+            if (!entity.IsCompleted)
+                throw new InvalidOperationException("Cannot set CompletedAt if IsCompleted is false");
+            entity.CompletedAt = dto.CompletedAt.Value;
+        }
+
+        entity.UpdatedAt = DateTime.UtcNow;
+        repository.Update(entity);
+        await repository.SaveChangesAsync();
+
+        return entity;
     }
 
-    public async Task<bool> DeleteAsync(Expression<Func<UserCourse, bool>> filter)
+
+    public async Task<bool> DeleteAsync(long id)
     {
-        var res = await repository.GetAsync(filter);
+        var level = await repository.GetAsync(c => c.Id == id)
+            ?? throw new HttpStatusCodeException(404, "Course not found");
 
-        if (res == null)
-            throw new HttpStatusCodeException(404, "UserCourse not found");
-
-        res.DeletedBy = HttpContextHelper.UserId;
-        await repository.DeleteAsync(res);
+        await repository.DeleteAsync(level);
         await repository.SaveChangesAsync();
+
         return true;
     }
 

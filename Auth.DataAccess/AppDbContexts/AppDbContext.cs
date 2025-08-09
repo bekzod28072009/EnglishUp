@@ -30,7 +30,6 @@ public class AppDbContext : DbContext
     public virtual DbSet<CourseComment> CourseComments { get; set; }
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<Lesson> Lessons { get; set; }
-    public virtual DbSet<LessonPart> LessonsPart { get; set; }
 
     // All related to Permissions and Roles
     public virtual DbSet<Role> Roles { get; set; }
