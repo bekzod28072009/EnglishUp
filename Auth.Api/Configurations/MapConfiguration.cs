@@ -73,7 +73,9 @@ public class MapConfiguration : Profile
         // DailyChallenge
         CreateMap<DailyChallengge, DailyChallengeForViewDto>().ReverseMap();
         CreateMap<DailyChallengge, DailyChallengeForCreateDto>().ReverseMap();
-        CreateMap<DailyChallengge, DailyChallengeForUpdateDto>().ReverseMap();
+        CreateMap<DailyChallengeForUpdateDto, DailyChallengge>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
 
         // Streak
         CreateMap<Streak, StreakForViewDto>().ReverseMap();
